@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+
+<launch>
+      <arg name="robot_type" default="aliengo" doc="Robot type: [a1, aliengo, go1, laikago]"/>
+
+      <arg name="cheater" default="true"/>
+
+      <!-- make the files into global parameters -->
+      <param name="urdfFile" value="/tmp/legged_control/$(arg robot_type).urdf"/>
+      <param name="taskFile" value="$(find legged_controllers)/config/$(arg robot_type)/task.info"/>
+      <param name="referenceFile" value="$(find legged_controllers)/config/$(arg robot_type)/reference.info"/>
+      <param name="gaitCommandFile" value="$(find legged_controllers)/config/$(arg robot_type)/gait.info"/>
+
+      <rosparam file="$(find legged_controllers)/config/controllers.yaml" command="load"/>
+
+      <node pkg="rqt_gui" type="rqt_gui" name="rqt_gui_node"
+            output="screen"/>
+
+      <node if="$(arg cheater)" name="controller_loader" pkg="controller_manager" type="controller_manager"
+            output="screen" args="load
+            controllers/joint_state_controller
+            controllers/legged_controller
+            controllers/legged_stateserver
+            controllers/legged_cheater_controller "/>
+
+      <node unless="$(arg cheater)" name="controller_loader" pkg="controller_manager" type="controller_manager"
+            output="screen" args="load
+            controllers/joint_state_controller
+            controllers/legged_stateserver
+            controllers/legged_controller 
+            "/>
+
+      <node pkg="ocs2_legged_robot_ros" type="legged_robot_gait_command" name="legged_robot_gait_command"
+            output="screen"/>
+
+      <node pkg="legged_controllers" type="legged_target_trajectories_publisher" name="legged_robot_target"
+            output="screen"/>
+
+      <arg name="joy_dev" default="/dev/input/js0"/>
+      <arg name="teleop_config" default="$(find legged_controllers)/config/joy.yaml"/>
+
+      <node pkg="joy" type="joy_node" name="joy_node">
+            <param name="dev" value="$(arg joy_dev)"/>
+            <param name="deadzone" value="1e-3"/>
+            <param name="autorepeat_rate" value="10"/>
+            <param name="coalesce_interval" value="0.05"/>
+      </node>
+
+      <rosparam file="$(arg teleop_config)" command="load"/>
+      <node pkg="joy_teleop" type="joy_teleop.py" name="joy_teleop">
+      </node>
+
+      <!-- <include file="$(find elevation_mapping_cupy)/launch/a1_segmentation.launch">
+      </include> -->
+      
+</launch>

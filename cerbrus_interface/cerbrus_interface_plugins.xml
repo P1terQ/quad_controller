@@ -1,0 +1,10 @@
+<library path="lib/libcerbrus_interface">
+
+    <class name="legged/CerberusVilo" type="legged::CerberusVilo"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            The basic CerberusVilo.
+        </description>
+    </class>
+
+</library>

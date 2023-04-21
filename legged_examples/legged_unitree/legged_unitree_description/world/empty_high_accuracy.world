@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+   <world name="default">
+    <physics type='ode'>
+      <gravity>0 0 -9.81</gravity>
+      <!-- max step size has to be a multiple of the desired task rate-->
+      <max_step_size>0.001</max_step_size> 
+      <real_time_factor>1</real_time_factor>
+    </physics>
+     <!-- A global light source -->
+     <include>
+       <uri>model://sun</uri>
+     </include>
+     <!-- A ground plane -->
+    <model name="ground_plane">
+         <static>true</static>
+         <link name="link">
+           <collision name="collision">
+             <geometry>
+               <plane>
+                 <normal>0 0 1</normal>
+                 <size>100 100</size>
+               </plane>
+             </geometry>
+             <surface>
+             <contact>
+             
+ <ode>
+                 <kp>60000</kp>
+                 <kd>40.0</kd>
+                 <max_vel>10000.0</max_vel>
+                 <min_depth>0.0</min_depth>
+               </ode>
+             </contact>
+               <friction>
+                 <ode>
+                   <mu>100</mu>
+                   <mu2>50</mu2>
+                 </ode>
+               </friction>
+             </surface>
+           </collision>
+         </link>
+       </model>
+   </world>
+</sdf>

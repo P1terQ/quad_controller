@@ -1,0 +1,22 @@
+<launch>
+    <arg name="robot_type" default="a1" doc="Robot type: [a1, aliengo, go1, laikago]"/>
+
+    <param name="legged_robot_description" command="$(find xacro)/xacro $(find legged_unitree_description)/urdf/robot.xacro
+       robot_type:=$(arg robot_type)
+    "/>
+    <node name="generate_urdf" pkg="legged_common" type="generate_urdf.sh" output="screen"
+          args="$(find legged_unitree_description)/urdf/robot.xacro $(arg robot_type)"/>
+
+    <rosparam file="$(find legged_gazebo)/config/default.yaml" command="load"/>
+
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_house.world"/>
+    </include>
+
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"
+            args="-urdf -model $(arg robot_type) -x -3.0 -y 1.0 -z 0.5 -param legged_robot_description"/>
+
+    <node pkg="rviz" type="rviz" name="rviz" respawn="false" output="screen" 
+      args="-d $(find legged_unitree_description)/rviz/config2.rviz"/>
+
+</launch>

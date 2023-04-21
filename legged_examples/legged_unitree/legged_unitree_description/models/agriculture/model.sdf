@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <latitude_deg>50.1095</latitude_deg>
+      <longitude_deg>-97.319</longitude_deg>
+      <elevation>250</elevation>
+      <heading_deg>0</heading_deg>
+    </spherical_coordinates>
+	<gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose>-57.2226 -44.9709 55.5119 0 0.879643 1.12877</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
+	<gravity>0 0 -9.8</gravity>
+	<magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type='adiabatic'/>
+    <wind/>
+	<model name="agriculture">
+		<static>true</static>
+		<link name="link">
+			<pose>0 0 0 0 0 0</pose>
+			<collision name="collision">
+				<geometry>
+					<mesh>
+						<uri>model://agriculture/mesh/agriculture_world.dae</uri>
+						<scale>0.65 0.65 0.65</scale>
+					</mesh>
+				</geometry>
+				<surface>
+					<bounce>
+						<restitution_coefficient>0.01</restitution_coefficient>
+						<threshold>5.0</threshold>
+					</bounce>
+					<friction>
+						<ode>
+							<mu>100</mu>
+							<mu2>10</mu2>
+						</ode>
+					</friction>
+					<contact>
+						<ode>
+							<soft_cfm>0.001</soft_cfm>
+							<kp>100000.0</kp>
+							<kd>1000.0</kd>
+						</ode>
+					</contact>
+				</surface>
+			</collision>
+			<visual name="visual">
+				<geometry>
+					<mesh>
+						<uri>model://agriculture/mesh/agriculture_world.dae</uri>
+						<scale>0.65 0.65 0.65</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+	</model>
+</sdf>
+

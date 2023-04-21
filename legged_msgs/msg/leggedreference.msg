@@ -1,0 +1,2 @@
+float64 z_offset
+float64 pitch_offset

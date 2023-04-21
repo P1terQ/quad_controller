@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+        <model name="rough_terrain">
+		<static>true</static>
+		<link name="link">
+			<pose>0 0 0 1.57 0 0</pose>
+			<collision name="collision">
+				<geometry>
+					<mesh>
+                                                <uri>model://rough_terrain/mesh/terrain.dae</uri>
+						<scale>0.5 0.25 0.5</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="visual">
+				<geometry>
+					<mesh>
+                                                <uri>model://rough_terrain/mesh/terrain.dae</uri>
+						<scale>0.5 0.25 0.5</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+	</model>
+</sdf>
+

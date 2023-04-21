@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+	<model name="ruins">
+		<static>true</static>
+		<link name="link">
+			<pose>-2.0 -2.0 0 0 0 0</pose>
+			<collision name="collision">
+				<geometry>
+					<mesh>
+						<uri>model://orchard/mesh/orchard_world.dae</uri>
+					</mesh>
+				</geometry>
+				<surface>
+					<bounce>
+						<restitution_coefficient>0.01</restitution_coefficient>
+						<threshold>5.0</threshold>
+					</bounce>
+					<friction>
+						<ode>
+							<mu>100</mu>
+							<mu2>50</mu2>
+						</ode>
+					</friction>
+					<contact>
+						<ode>
+							<soft_cfm>0.001</soft_cfm>
+							<kp>100000.0</kp>
+							<kd>1000.0</kd>
+						</ode>
+					</contact>
+				</surface>
+			</collision>
+			<visual name="visual">
+				<geometry>
+					<mesh>
+						<uri>model://orchard/mesh/orchard_world.dae</uri>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+	</model>
+</sdf>
+

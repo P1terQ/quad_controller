@@ -1,0 +1,10 @@
+<library path="lib/liblegged_stateserver">
+
+    <class name="legged/StateServer" type="legged::StateServer"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            The basic StateServer.
+        </description>
+    </class>
+
+</library>

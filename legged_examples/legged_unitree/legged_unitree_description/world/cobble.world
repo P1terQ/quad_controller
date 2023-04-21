@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="default">
+    <physics type='ode'>
+      <gravity>0 0 -9.81</gravity>
+      <!-- max step size has to be a multiple of the desired task rate-->
+      <max_step_size>0.001</max_step_size> 
+      <real_time_factor>1</real_time_factor>
+    </physics>
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <include>
+      <name>cobblestones</name>
+      <uri>model://cobblestones_2</uri>
+      <pose>3 0  -0.04 0.05 0 -1.57</pose>
+    </include>
+    <include>
+      <name>cobblestones2</name>
+      <uri>model://cobblestones_2</uri>
+      <pose>4.5 0  -0.04 -0.05 0 -1.57</pose>
+    </include>
+    
+  </world>
+</sdf>

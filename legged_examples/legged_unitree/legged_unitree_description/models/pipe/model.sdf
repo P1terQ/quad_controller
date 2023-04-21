@@ -1,0 +1,47 @@
+<sdf version="1.4">
+<model name="pipe">
+    <static>true</static>
+    <link name="pipe">
+       <pose>0 0 0.0 0 1.57 1.57</pose>
+       <collision name="collision">
+            <geometry>
+              <cylinder>
+                     <radius>0.04</radius>
+                     <length>2</length>
+              </cylinder>
+            </geometry>       
+                <surface>
+                    <bounce>
+                        <restitution_coefficient>0.01</restitution_coefficient>
+                        <threshold>5</threshold>
+                    </bounce>
+                    <friction>
+                        <ode>
+                            <mu>10</mu>
+                            <mu2>10</mu2>
+                        </ode>
+                    </friction>
+                    <contact>
+                        <ode>
+                            <soft_cfm>0.001</soft_cfm>
+                            <kp>100000</kp>
+                            <kd>1000</kd>
+                        </ode>
+                    </contact>
+            </surface>           
+       </collision>
+        
+       <visual name="visual">
+        <geometry>
+             <cylinder>
+                     <radius>0.04</radius>
+                     <length>2</length>
+              </cylinder>
+        </geometry>
+      </visual>
+      
+    </link>
+    
+  </model>
+  
+</sdf>

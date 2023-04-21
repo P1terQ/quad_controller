@@ -1,0 +1,18 @@
+controllers:
+
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 500
+  
+  legged_controller:
+    type: legged/LeggedController
+
+  legged_cheater_controller:
+    type: legged/LeggedCheaterController
+
+  legged_stateserver:
+    type: legged/StateServer
+
+  # cerbrus_interface:
+  #   type: legged/CerberusVilo
+  #   publish_rate: 500

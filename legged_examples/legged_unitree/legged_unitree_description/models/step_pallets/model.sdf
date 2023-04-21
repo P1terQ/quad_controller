@@ -1,0 +1,122 @@
+<sdf version='1.4'>
+	<model name='step_pallets+stepping_blocks'>
+		<static>1</static>
+		<link name='pallet_1'>
+			<pose>0 0 0 0 0 0</pose>
+			<collision name='collision'>
+				<geometry>
+					<mesh>
+						<uri>model://pallet_benchmark/mesh/pallet.dae</uri>
+						<scale>0.787 11.81 1.417</scale>
+					</mesh>
+				</geometry>
+				<surface>
+					<bounce>
+						<restitution_coefficient>0.01</restitution_coefficient>
+						<threshold>5</threshold>
+					</bounce>
+					<friction>
+						<ode>
+							<mu>10</mu>
+							<mu2>10</mu2>
+						</ode>
+					</friction>
+					<contact>
+						<ode>
+							<soft_cfm>0.001</soft_cfm>
+							<kp>100000</kp>
+							<kd>1000</kd>
+						</ode>
+					</contact>
+				</surface>
+				<max_contacts>10</max_contacts>
+			</collision>
+			<visual name='visual'>
+				<geometry>
+					<mesh>
+						<uri>model://pallet_benchmark/mesh/pallet.dae</uri>
+						<scale>0.787 11.81 1.417</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name='pallet_2'>
+			<pose>0.6 0 0 0 0 0</pose>
+			<collision name='collision'>
+				<geometry>
+					<mesh>
+						<uri>model://pallet_benchmark/mesh/pallet.dae</uri>
+						<scale>0.787 11.81 1.417</scale>
+					</mesh>
+				</geometry>
+				<surface>
+					<bounce>
+						<restitution_coefficient>0.01</restitution_coefficient>
+						<threshold>5</threshold>
+					</bounce>
+					<friction>
+						<ode>
+							<mu>10</mu>
+							<mu2>10</mu2>
+						</ode>
+					</friction>
+					<contact>
+						<ode>
+							<soft_cfm>0.001</soft_cfm>
+							<kp>100000</kp>
+							<kd>1000</kd>
+						</ode>
+					</contact>
+				</surface>
+				<max_contacts>10</max_contacts>
+			</collision>
+			<visual name='visual'>
+				<geometry>
+					<mesh>
+						<uri>model://pallet_benchmark/mesh/pallet.dae</uri>
+						<scale>0.787 11.81 1.417</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name='pallet_3'>
+			<pose>0.3 0 0.1 0 0 0</pose>
+			<collision name='collision'>
+				<geometry>
+					<mesh>
+						<uri>model://pallet_benchmark/mesh/pallet.dae</uri>
+						<scale>0.787 11.81 1.417</scale>
+					</mesh>
+				</geometry>
+				<surface>
+					<bounce>
+						<restitution_coefficient>0.01</restitution_coefficient>
+						<threshold>5</threshold>
+					</bounce>
+					<friction>
+						<ode>
+							<mu>10</mu>
+							<mu2>10</mu2>
+						</ode>
+					</friction>
+					<contact>
+						<ode>
+							<soft_cfm>0.001</soft_cfm>
+							<kp>100000</kp>
+							<kd>1000</kd>
+						</ode>
+					</contact>
+				</surface>
+				<max_contacts>10</max_contacts>
+			</collision>
+			<visual name='visual'>
+				<geometry>
+					<mesh>
+						<uri>model://pallet_benchmark/mesh/pallet.dae</uri>
+						<scale>0.787 11.81 1.417</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+</model>
+</sdf>
