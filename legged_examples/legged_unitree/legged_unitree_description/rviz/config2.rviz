@@ -3,10 +3,7 @@ Panels:
     Help Height: 138
     Name: Displays
     Property Tree Widget:
-      Expanded:
-        - /RobotModel1
-        - /MarkerArray1
-        - //legged_robot/desiredBaseTrajectory1
+      Expanded: ~
       Splitter Ratio: 0.5828054547309875
     Tree Height: 991
   - Class: rviz/Selection
@@ -441,42 +438,6 @@ Visualization Manager:
       Topic: /projectedQueryPosition_LF
       Unreliable: false
       Value: true
-    - Alpha: 1
-      Class: rviz/Polygon
-      Color: 25; 255; 0
-      Enabled: true
-      Name: RH_Polygon
-      Queue Size: 10
-      Topic: /convex_terrain_RH
-      Unreliable: false
-      Value: true
-    - Alpha: 1
-      Class: rviz/Polygon
-      Color: 25; 255; 0
-      Enabled: true
-      Name: LH_Polygon
-      Queue Size: 10
-      Topic: /convex_terrain_LH
-      Unreliable: false
-      Value: true
-    - Alpha: 1
-      Class: rviz/Polygon
-      Color: 25; 255; 0
-      Enabled: true
-      Name: RF_Polygon
-      Queue Size: 10
-      Topic: /convex_terrain_RF
-      Unreliable: false
-      Value: true
-    - Alpha: 1
-      Class: rviz/Polygon
-      Color: 25; 255; 0
-      Enabled: true
-      Name: LF_Polygon
-      Queue Size: 10
-      Topic: /convex_terrain_LF
-      Unreliable: false
-      Value: true
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /legged_robot/optimizedStateTrajectory
@@ -484,7 +445,6 @@ Visualization Manager:
       Namespaces:
         CoM Trajectory: true
         EE Trajectories: true
-        Future footholds: true
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -503,7 +463,7 @@ Visualization Manager:
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Min Color: 0; 0; 0
-      Name: PointCloud2
+      Name: /grid_map_sdf_demo/signed_distance_field/full_sdf
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
@@ -683,15 +643,47 @@ Visualization Manager:
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /legged_reference_visualization
-      Name: MarkerArray
+      Name: /legged_reference_visualization
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /legged_robot/desiredBaseTrajectory
       Name: /legged_robot/desiredBaseTrajectory
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /convex_terrain_LF
+      Name: /convex_terrain_LF
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /convex_terrain_LH
+      Name: /convex_terrain_LH
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /convex_terrain_RF
+      Name: /convex_terrain_RF
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /convex_terrain_RH
+      Name: /convex_terrain_RH
       Namespaces:
         "": true
       Queue Size: 100
@@ -724,7 +716,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.31982421875
+      Distance: 6.797327041625977
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -740,9 +732,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.2847949266433716
+      Pitch: 0.34479501843452454
       Target Frame: base_footprint
-      Yaw: 1.5865157842636108
+      Yaw: 1.4665158987045288
     Saved: ~
 Window Geometry:
   Displays:

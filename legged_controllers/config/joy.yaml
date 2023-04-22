@@ -5,12 +5,12 @@ teleop:
     topic_name: cmd_vel
     deadman_buttons: [ 4 ]
     axis_mappings:
-      - axis: 0
+      - axis: 3
         target: angular.z
-        scale: 1.57
+        scale: 0.785
       - axis: 1
         target: linear.x
         scale: 0.5
-      - axis: 3
+      - axis: 0
         target: linear.y
         scale: 0.3

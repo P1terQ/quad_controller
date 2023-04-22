@@ -48,9 +48,13 @@ FrictionConeConstraint::FrictionConeConstraint(const SwitchedModelReferenceManag
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void FrictionConeConstraint::setSurfaceNormalInWorld(const vector3_t& surfaceNormalInWorld) {
-  t_R_w.setIdentity();
-  throw std::runtime_error("[FrictionConeConstraint] setSurfaceNormalInWorld() is not implemented!");
+matrix3_t setSurfaceNormalInWorld(vector3_t& surfaceNormalInWorld) {
+  // t_R_w.setIdentity();
+  vector3_t Identity_Vector;
+  Identity_Vector << 0.0, 0.0, 1.0;
+  Eigen::Quaterniond quat;
+  quat = Eigen::Quaterniond::FromTwoVectors(Identity_Vector, surfaceNormalInWorld);
+  return quat.toRotationMatrix();
 }
 
 /******************************************************************************************************/
@@ -64,7 +68,12 @@ bool FrictionConeConstraint::isActive(scalar_t time) const {
 /******************************************************************************************************/
 /******************************************************************************************************/
 vector_t FrictionConeConstraint::getValue(scalar_t time, const vector_t& state, const vector_t& input,
-                                          const PreComputation& preComp) const {
+                                          const PreComputation& preComp) const 
+{
+  vector3_t normal = referenceManagerPtr_->getSurfaceNormal(contactPointIndex_);
+  matrix3_t t_R_w;
+  t_R_w = setSurfaceNormalInWorld(normal);
+
   const auto forcesInWorldFrame = centroidal_model::getContactForces(input, contactPointIndex_, info_);
   const vector3_t localForce = t_R_w * forcesInWorldFrame;
   return coneConstraint(localForce);
@@ -75,11 +84,16 @@ vector_t FrictionConeConstraint::getValue(scalar_t time, const vector_t& state, 
 /******************************************************************************************************/
 VectorFunctionLinearApproximation FrictionConeConstraint::getLinearApproximation(scalar_t time, const vector_t& state,
                                                                                  const vector_t& input,
-                                                                                 const PreComputation& preComp) const {
+                                                                                 const PreComputation& preComp) const 
+{
+  vector3_t normal = referenceManagerPtr_->getSurfaceNormal(contactPointIndex_);
+  matrix3_t t_R_w;
+  // matrix3_t t_R_w = setSurfaceNormalInWorld(referenceManagerPtr_->getSurfaceNormal(contactPointIndex_));
+
   const vector3_t forcesInWorldFrame = centroidal_model::getContactForces(input, contactPointIndex_, info_);
   const vector3_t localForce = t_R_w * forcesInWorldFrame;
 
-  const auto localForceDerivatives = computeLocalForceDerivatives(forcesInWorldFrame);
+  const auto localForceDerivatives = computeLocalForceDerivatives(forcesInWorldFrame, t_R_w);
   const auto coneLocalDerivatives = computeConeLocalDerivatives(localForce);
   const auto coneDerivatives = computeConeConstraintDerivatives(coneLocalDerivatives, localForceDerivatives);
 
@@ -95,11 +109,16 @@ VectorFunctionLinearApproximation FrictionConeConstraint::getLinearApproximation
 /******************************************************************************************************/
 VectorFunctionQuadraticApproximation FrictionConeConstraint::getQuadraticApproximation(scalar_t time, const vector_t& state,
                                                                                        const vector_t& input,
-                                                                                       const PreComputation& preComp) const {
+                                                                                       const PreComputation& preComp) const 
+{
+  vector3_t normal = referenceManagerPtr_->getSurfaceNormal(contactPointIndex_);
+  matrix3_t t_R_w;
+  // matrix3_t t_R_w = setSurfaceNormalInWorld(referenceManagerPtr_->getSurfaceNormal(contactPointIndex_));
+
   const vector3_t forcesInWorldFrame = centroidal_model::getContactForces(input, contactPointIndex_, info_);
   const vector3_t localForce = t_R_w * forcesInWorldFrame;
 
-  const auto localForceDerivatives = computeLocalForceDerivatives(forcesInWorldFrame);
+  const auto localForceDerivatives = computeLocalForceDerivatives(forcesInWorldFrame,t_R_w);
   const auto coneLocalDerivatives = computeConeLocalDerivatives(localForce);
   const auto coneDerivatives = computeConeConstraintDerivatives(coneLocalDerivatives, localForceDerivatives);
 
@@ -117,9 +136,9 @@ VectorFunctionQuadraticApproximation FrictionConeConstraint::getQuadraticApproxi
 /******************************************************************************************************/
 /******************************************************************************************************/
 FrictionConeConstraint::LocalForceDerivatives FrictionConeConstraint::computeLocalForceDerivatives(
-    const vector3_t& forcesInWorldFrame) const {
+    const vector3_t& forcesInWorldFrame, const matrix3_t rot) const {
   LocalForceDerivatives localForceDerivatives{};
-  localForceDerivatives.dF_du = t_R_w;
+  localForceDerivatives.dF_du = rot;
   return localForceDerivatives;
 }
 

@@ -65,7 +65,7 @@ vector_t FootPlacementConstraint::getValue(scalar_t time, const vector_t& state,
     Eigen::Matrix<scalar_t, Num_Vertex, 1> s;
     s << swingTimeLeft, swingTimeLeft, swingTimeLeft, swingTimeLeft,
          swingTimeLeft, swingTimeLeft, swingTimeLeft, swingTimeLeft;
-
+    s *= 5;
 
     // 6. Add constraint Ax + b + s >= 0
     vector3_t pEE_world = endEffectorKinematicsPtr_->getPosition(state).front();
@@ -114,6 +114,7 @@ VectorFunctionQuadraticApproximation FootPlacementConstraint::getQuadraticApprox
     Eigen::Matrix<scalar_t, Num_Vertex, 1> s;
     s << swingTimeLeft, swingTimeLeft, swingTimeLeft, swingTimeLeft,
          swingTimeLeft, swingTimeLeft, swingTimeLeft, swingTimeLeft;
+    s *= 5;
 
     VectorFunctionLinearApproximation positionLinearApproximation = 
         endEffectorKinematicsPtr_->getPositionLinearApproximation(state).front();

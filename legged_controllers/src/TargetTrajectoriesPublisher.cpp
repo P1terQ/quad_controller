@@ -105,7 +105,7 @@ TargetTrajectories cmdVelToTargetTrajectories(const vector_t& cmdVel, const Syst
     target(1) = currentPose(1) + cmdVelRot(1) * timeToTarget; //! y_goal = y_now + v * delta_T
 
     // target(2) = COM_HEIGHT + z_offset;
-    target(2) = COM_HEIGHT + 0.05 + z_offset;
+    target(2) = COM_HEIGHT + z_offset;
 
     target(3) = currentPose(3) + cmdVel(3) * timeToTarget;  //! yaw_goal = yaw_now + v * delta_T
     //TODO: 加上yaw和pitch上的控制
@@ -132,10 +132,10 @@ TargetTrajectories cmdVelToTargetTrajectories(const vector_t& cmdVel, const Syst
 
   // std::cout << "stateTrajectory.size()" << trajectories.stateTrajectory.size() << std::endl;
 
-  std::cout << "currentVel: " << trajectories.stateTrajectory[0].segment<6>(0) << std::endl;
-  std::cout << "targetVel: " << trajectories.stateTrajectory[1].segment<6>(0) << std::endl;
-  std::cout << "currentPose: " << trajectories.stateTrajectory[0].segment<6>(6) << std::endl;
-  std::cout << "targetPose: " << trajectories.stateTrajectory[1].segment<6>(6) << std::endl;
+  // std::cout << "currentVel: " << trajectories.stateTrajectory[0].segment<6>(0) << std::endl;
+  // std::cout << "targetVel: " << trajectories.stateTrajectory[1].segment<6>(0) << std::endl;
+  // std::cout << "currentPose: " << trajectories.stateTrajectory[0].segment<6>(6) << std::endl;
+  // std::cout << "targetPose: " << trajectories.stateTrajectory[1].segment<6>(6) << std::endl;
 
   return trajectories;
 }

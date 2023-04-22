@@ -92,7 +92,7 @@ class SwitchedModelReferenceManager : public ReferenceManager {
 
   vector3_t get_FootHold_Approximation(vector3_t FootHold_init, bool ifNeed_Ab, size_t FootId);
 
-  void visualize_footholds(void);
+  vector3_t getSurfaceNormal(const size_t footid) const { return Normal_now.col(footid); }
 
  protected:
   void modifyReferences(scalar_t initTime, scalar_t finalTime, const vector_t& initState, TargetTrajectories& targetTrajectories,
@@ -105,7 +105,7 @@ class SwitchedModelReferenceManager : public ReferenceManager {
 
   feet_array_t<Eigen::Matrix<scalar_t, NumVertex, 3>> FootPlacement_A_Array;
   feet_array_t<Eigen::Matrix<scalar_t, NumVertex, 1>> FootPlacement_b_Array;
-
+k
   feet_array_t<scalar_t> last_terrainHeight;
   feet_array_t<scalar_t> next_terrainHeight;
 
@@ -129,6 +129,10 @@ class SwitchedModelReferenceManager : public ReferenceManager {
   Eigen::Matrix<scalar_t, 3, 4> foot_pos_baseF_next_projected;  // 下一个mode(投影后)foot在世界系下的位置
   Eigen::Matrix<scalar_t, 3, 4> foot_pos_baseF_next_next_projected; // 下下个mode(投影后)foot在世界系下的位置
 
+  Eigen::Matrix<scalar_t, 3, 4> Normal_now;
+  Eigen::Matrix<scalar_t, 3, 4> Normal_next;
+  Eigen::Matrix<scalar_t, 3, 4> Normal_next_next;
+
   scalar_t terrain_angle_;
 
   ros::Publisher positionPublisher_LF;
@@ -150,6 +154,7 @@ class SwitchedModelReferenceManager : public ReferenceManager {
 
   // visualization_msgs::MarkerArray Foothold_visulization;
 
+  void visualize_footholds(void);
 
 
 };

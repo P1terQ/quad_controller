@@ -7,7 +7,7 @@ legged_robot_interface
 
 model_settings
 {
-  positionErrorGain             2.0 
+  positionErrorGain             0.01
   phaseTransitionStanceTime     0.1
 
   verboseCppAd                  true
@@ -190,7 +190,7 @@ Q
   ;; Base Pose: [position, orientation] ;;
   (6,6)   1000.0   ; p_base_x, default: 1000.0
   (7,7)   1000.0   ; p_base_y, default: 1000.0 
-  (8,8)   1500.0   ; p_base_z, default: 1500.0
+  (8,8)   5000.0   ; p_base_z, default: 1500.0
   (9,9)   100.0    ; theta_base_z
   (10,10) 300.0    ; theta_base_y
   (11,11) 300.0    ; theta_base_x
@@ -253,8 +253,8 @@ R
 FootPlacementSoftConstraint
 {
   ; relaxed log barrier parameters
-  mu                     0.00004 ; 0.00004  0.01
-  delta                  0.005 ; 0.005  0.001
+  mu                     0.0004 ; 0.00004  0.01
+  delta                  0.0001 ; 0.005  0.001
 }
 
 frictionConeSoftConstraint

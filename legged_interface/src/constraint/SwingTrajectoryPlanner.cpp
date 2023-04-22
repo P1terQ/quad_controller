@@ -175,8 +175,17 @@ void SwingTrajectoryPlanner::update(const ModeSchedule& modeSchedule,
       else 
       { // for a stance leg
         // Note: setting the time here arbitrarily to 0.0 -> 1.0 makes the assert in CubicSpline fail
+        // const int stanceStartIndex = startTimesIndices[j][p];
+        // const int stanceFinalIndex = finalTimesIndices[j][p];
+        // checkThatIndicesAreValid(j, p, stanceStartIndex, stanceFinalIndex, modeSequence); 
+        // const scalar_t stanceStartTime = eventTimes[stanceStartIndex];
+        // const scalar_t stanceFinalTime = eventTimes[stanceFinalIndex];
+        // const CubicSpline::Node liftOff{stanceStartTime, liftOffHeightSequence[j][p], 0.0};
+        // const CubicSpline::Node touchDown{stanceFinalTime, touchDownHeightSequence[j][p], 0.0};
+
         const CubicSpline::Node liftOff{0.0, liftOffHeightSequence[j][p], 0.0};
-        const CubicSpline::Node touchDown{1.0, liftOffHeightSequence[j][p], 0.0};
+        const CubicSpline::Node touchDown{1.0, touchDownHeightSequence[j][p], 0.0};
+
         feetHeightTrajectories_[j].emplace_back(liftOff, liftOffHeightSequence[j][p], touchDown);
       }
     }

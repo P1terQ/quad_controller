@@ -77,6 +77,10 @@ SwitchedModelReferenceManager::SwitchedModelReferenceManager(std::shared_ptr<Gai
   foot_pos_baseF_next_projected.setZero();
   foot_pos_baseF_next_next_projected.setZero();
 
+  Normal_now.setZero();
+  Normal_next.setZero();
+  Normal_next_next.setZero();
+
   terrain_angle_ = 0;
 
   //! A1
@@ -91,19 +95,23 @@ SwitchedModelReferenceManager::SwitchedModelReferenceManager(std::shared_ptr<Gai
 
   positionPublisher_LF = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("queryPosition_LF", 1);
   projectionPublisher_LF = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("projectedQueryPosition_LF", 1);
-  convexTerrainPublisher_LF = ReferenceManagerNH.advertise<geometry_msgs::PolygonStamped>("convex_terrain_LF", 1);
+  // convexTerrainPublisher_LF = ReferenceManagerNH.advertise<geometry_msgs::PolygonStamped>("convex_terrain_LF", 1);
+  convexTerrainPublisher_LF = ReferenceManagerNH.advertise<visualization_msgs::Marker>("convex_terrain_LF", 1);
 
   positionPublisher_RF = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("queryPosition_RF", 1);
   projectionPublisher_RF = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("projectedQueryPosition_RF", 1);
-  convexTerrainPublisher_RF = ReferenceManagerNH.advertise<geometry_msgs::PolygonStamped>("convex_terrain_RF", 1);
+  // convexTerrainPublisher_RF = ReferenceManagerNH.advertise<geometry_msgs::PolygonStamped>("convex_terrain_RF", 1);
+  convexTerrainPublisher_RF = ReferenceManagerNH.advertise<visualization_msgs::Marker>("convex_terrain_RF", 1);
 
   positionPublisher_LH = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("queryPosition_LH", 1);
   projectionPublisher_LH = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("projectedQueryPosition_LH", 1);
-  convexTerrainPublisher_LH = ReferenceManagerNH.advertise<geometry_msgs::PolygonStamped>("convex_terrain_LH", 1);
+  // convexTerrainPublisher_LH = ReferenceManagerNH.advertise<geometry_msgs::PolygonStamped>("convex_terrain_LH", 1);
+  convexTerrainPublisher_LH = ReferenceManagerNH.advertise<visualization_msgs::Marker>("convex_terrain_LH", 1);
 
   positionPublisher_RH = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("queryPosition_RH", 1);
   projectionPublisher_RH = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("projectedQueryPosition_RH", 1);
-  convexTerrainPublisher_RH = ReferenceManagerNH.advertise<geometry_msgs::PolygonStamped>("convex_terrain_RH", 1);
+  // convexTerrainPublisher_RH = ReferenceManagerNH.advertise<geometry_msgs::PolygonStamped>("convex_terrain_RH", 1);
+  convexTerrainPublisher_RH = ReferenceManagerNH.advertise<visualization_msgs::Marker>("convex_terrain_RH", 1);
 
   reference_z_offset_publisher = ReferenceManagerNH.advertise<legged_msgs::leggedreference>("/legged_reference_Topic", 1);
 
@@ -171,11 +179,30 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
 
       legged_msgs::leggedreference reference_msg;
       reference_msg.pitch_offset = terrain_angle_;
-      reference_msg.z_offset = (z_offset_hipLF + z_offset_hipRF + z_offset_hipLH + z_offset_hipRH) / 4;
+      reference_msg.z_offset = (z_offset_hipLF + z_offset_hipRF + z_offset_hipLH + z_offset_hipRH) / 4 * 1.05;
       // reference_msg.z_offset = z_offset_base * 1.5;
       // std::cout << "z_offset: " << reference_msg.z_offset << std::endl;
       reference_z_offset_publisher.publish(reference_msg); 
     }
+
+    // auto layers = planarTerrainPtr_->gridMap.getLayers();
+    // for(auto i : layers)
+    // {
+    //   std::cout << i << std::endl;
+    // }
+    // smooth
+    // normal_x
+    // normal_y
+    // normal_z
+    // plane_classification
+    // smooth_before_postprocess
+    // elevationWithNaN
+    // elevationWithNaN_i
+    // elevationWithNaNClosed
+    // elevationWithNaNClosedDilated
+    // smooth_planar
+
+
   }
 
   const auto timeHorizon = finalTime - initTime;  // MPC 1s
@@ -236,6 +263,24 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
                   foot_pos_baseF_next_next.col(j)[1] = foot_pos_baseF_next.col(j)[1] + vel_base_cmd_(1) * (currentMode_timeLeft+2*(next_swing_mode_duration));
                   foot_pos_baseF_next_next_projected.col(j) = get_FootHold_Approximation(foot_pos_baseF_next_next.col(j), false, j);
                   FootH_next_next_WorldF[j] = foot_pos_baseF_next_next_projected.col(j)[2];
+
+                  grid_map::Position foot_pos_baseF_now_gm = foot_pos_baseF_now.col(j).head(2);
+                  scalar_t normal_x_now = planarTerrainPtr_->gridMap.atPosition("normal_x",foot_pos_baseF_now_gm);
+                  scalar_t normal_y_now = planarTerrainPtr_->gridMap.atPosition("normal_y",foot_pos_baseF_now_gm);
+                  scalar_t normal_z_now = planarTerrainPtr_->gridMap.atPosition("normal_z",foot_pos_baseF_now_gm);
+                  Normal_now.col(j) << normal_x_now, normal_y_now, normal_z_now;
+
+                  grid_map::Position foot_pos_baseF_next_gm = foot_pos_baseF_next.col(j).head(2);
+                  scalar_t normal_x_next = planarTerrainPtr_->gridMap.atPosition("normal_x",foot_pos_baseF_next_gm);
+                  scalar_t normal_y_next = planarTerrainPtr_->gridMap.atPosition("normal_y",foot_pos_baseF_next_gm);
+                  scalar_t normal_z_next = planarTerrainPtr_->gridMap.atPosition("normal_z",foot_pos_baseF_next_gm);
+                  Normal_next.col(j) << normal_x_next, normal_y_next, normal_z_next;
+
+                  grid_map::Position foot_pos_baseF_next_next_gm = foot_pos_baseF_next_next.col(j).head(2);
+                  scalar_t normal_x_next_next = planarTerrainPtr_->gridMap.atPosition("normal_x",foot_pos_baseF_next_next_gm);
+                  scalar_t normal_y_next_next = planarTerrainPtr_->gridMap.atPosition("normal_y",foot_pos_baseF_next_next_gm);
+                  scalar_t normal_z_next_next = planarTerrainPtr_->gridMap.atPosition("normal_z",foot_pos_baseF_next_next_gm);
+                  Normal_next_next.col(j) << normal_x_next_next, normal_y_next_next, normal_z_next_next;
                 }
 
               }
@@ -263,13 +308,16 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
                 }
               }
 
-              // feet_liftOffHeightSequence.at(j).at(i+2) = 0.1;
+              // feet_liftOffHeightSequence.at(j).at(i+1) = 0.1;
+              // feet_touchDownHeightSequence.at(j).at(i+1) = 0.1;
+
+              // feet_liftOffHeightSequence.at(j).at(i+2) = 0.1; //!
               // feet_touchDownHeightSequence.at(j).at(i+2) = 0.1;
 
-              // // feet_liftOffHeightSequence.at(j).at(i+3) = 0.1;
-              // // feet_touchDownHeightSequence.at(j).at(i+3) = 0.1;
+              // feet_liftOffHeightSequence.at(j).at(i+3) = 0.1;
+              // feet_touchDownHeightSequence.at(j).at(i+3) = 0.1;
 
-              // feet_liftOffHeightSequence.at(j).at(i+4) = 0.1;
+              // feet_liftOffHeightSequence.at(j).at(i+4) = 0.1; //!
               // feet_touchDownHeightSequence.at(j).at(i+4) = 0.1;
 
             }
@@ -299,14 +347,17 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
                 }
               }
 
-              // feet_liftOffHeightSequence.at(j).at(i+1) = 0.1;
+              // feet_liftOffHeightSequence.at(j).at(i+1) = 0.1; //!
               // feet_touchDownHeightSequence.at(j).at(i+1) = 0.1;
 
-              // // feet_liftOffHeightSequence.at(j).at(i+2) = 0.1;
-              // // feet_touchDownHeightSequence.at(j).at(i+2) = 0.1;
+              // feet_liftOffHeightSequence.at(j).at(i+2) = 0.1;
+              // feet_touchDownHeightSequence.at(j).at(i+2) = 0.1;
 
-              // feet_liftOffHeightSequence.at(j).at(i+3) = 0.1;
+              // feet_liftOffHeightSequence.at(j).at(i+3) = 0.1; //!
               // feet_touchDownHeightSequence.at(j).at(i+3) = 0.1;
+
+              // feet_liftOffHeightSequence.at(j).at(i+4) = 0.1; 
+              // feet_touchDownHeightSequence.at(j).at(i+4) = 0.1;
             }
 
           }
@@ -408,14 +459,26 @@ vector3_t SwitchedModelReferenceManager::get_FootHold_Approximation(vector3_t Fo
 
   if(ifNeed_Ab)
   {
+    //! CgalPolygon2d
     const auto convexRegion = convex_plane_decomposition::growConvexPolygonInsideShape(
       FootHold_projection.regionPtr->boundaryWithInset.boundary, FootHold_projection.positionInTerrainFrame, NumVertex, growthFactor);
 
     std_msgs::Header header;
     header.frame_id = "odom";
 
-    auto convexRegionMsg =  //geometry_msgs::PolygonStamped
+    //! geometry_msgs::PolygonStamped
+    auto convexRegionMsg =  
         convex_plane_decomposition::to3dRosPolygon(convexRegion, FootHold_projection.regionPtr->transformPlaneToWorld, header); //! 这边得到的确实是 world frame
+
+    //! visualization_msgs::Marker
+    auto convexRegionMsg_colored =
+        convex_plane_decomposition::to3dRosMarker_(convexRegion,
+                                                  FootHold_projection.regionPtr->transformPlaneToWorld,
+                                                  header,
+                                                  convex_plane_decomposition::getColor_(FootId, 1.0),
+                                                  FootId,
+                                                  0.01); // lineWidth
+
 
     if(visualize)
     {
@@ -424,29 +487,33 @@ vector3_t SwitchedModelReferenceManager::get_FootHold_Approximation(vector3_t Fo
       {
       case 0:
       {
-        convexTerrainPublisher_LF.publish(convexRegionMsg);
-        projectionPublisher_LF.publish(toMarker(FootHold_projection.positionInWorld, header));
+        // convexTerrainPublisher_LF.publish(convexRegionMsg);
+        convexTerrainPublisher_LF.publish(convexRegionMsg_colored);
+        // projectionPublisher_LF.publish(toMarker(FootHold_projection.positionInWorld, header));
       }
       break;
       
       case 1:
       {
-        convexTerrainPublisher_RF.publish(convexRegionMsg);
-        projectionPublisher_RF.publish(toMarker(FootHold_projection.positionInWorld, header));
+        // convexTerrainPublisher_RF.publish(convexRegionMsg);
+        convexTerrainPublisher_RF.publish(convexRegionMsg_colored);
+        // projectionPublisher_RF.publish(toMarker(FootHold_projection.positionInWorld, header));
       }
         break;
 
       case 2:
       {
-        convexTerrainPublisher_LH.publish(convexRegionMsg);
-        projectionPublisher_LH.publish(toMarker(FootHold_projection.positionInWorld, header));
+        // convexTerrainPublisher_LH.publish(convexRegionMsg);
+        convexTerrainPublisher_LH.publish(convexRegionMsg_colored);
+        // projectionPublisher_LH.publish(toMarker(FootHold_projection.positionInWorld, header));
       }
         break;
 
       case 3:
       {
-        convexTerrainPublisher_RH.publish(convexRegionMsg);
-        projectionPublisher_RH.publish(toMarker(FootHold_projection.positionInWorld, header));
+        // convexTerrainPublisher_RH.publish(convexRegionMsg);
+        convexTerrainPublisher_RH.publish(convexRegionMsg_colored);
+        // projectionPublisher_RH.publish(toMarker(FootHold_projection.positionInWorld, header));
       }
         break;
 
@@ -511,22 +578,22 @@ void SwitchedModelReferenceManager::visualize_footholds()
   Foothold_visulization_msg.markers.reserve(12); // 4 * 3
 
   vector3_t n_direction_now = {0.0, 0.0, 0.12};
-  vector3_t n_direction_next = {0.0, 0.0, 0.12};  //todo 目前没有估计坡面的斜率，都假设是竖直方向的
+  vector3_t n_direction_next = {0.0, 0.0, 0.105};  //todo 目前没有估计坡面的斜率，都假设是竖直方向的
   vector3_t n_direction_next_next = {0.0, 0.0, 0.09}; 
 
   //! 再调以下alpha
-  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(n_direction_now, foot_pos_baseF_now_projected.col(0), Color::blue));
-  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(n_direction_next, foot_pos_baseF_next_projected.col(0), Color::blue));
-  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(n_direction_next_next, foot_pos_baseF_next_next_projected.col(0), Color::blue));
-  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(n_direction_now, foot_pos_baseF_now_projected.col(1), Color::orange));
-  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(n_direction_next, foot_pos_baseF_next_projected.col(1), Color::orange));
-  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(n_direction_next_next, foot_pos_baseF_next_next_projected.col(1), Color::orange));
-  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(n_direction_now, foot_pos_baseF_now_projected.col(2), Color::yellow));
-  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(n_direction_next, foot_pos_baseF_next_projected.col(2), Color::yellow));
-  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(n_direction_next_next, foot_pos_baseF_next_next_projected.col(2), Color::yellow));
-  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(n_direction_now, foot_pos_baseF_now_projected.col(3), Color::purple));
-  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(n_direction_next, foot_pos_baseF_next_projected.col(3), Color::purple));
-  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(n_direction_next_next, foot_pos_baseF_next_next_projected.col(3), Color::purple));
+  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(Normal_now.col(0)*0.12, foot_pos_baseF_now_projected.col(0), Color::blue));
+  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(Normal_next.col(0)*0.105, foot_pos_baseF_next_projected.col(0), Color::blue));
+  // Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(Normal_next_next.col(0)*0.09, foot_pos_baseF_next_next_projected.col(0), Color::blue));
+  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(Normal_now.col(1)*0.12, foot_pos_baseF_now_projected.col(1), Color::orange));
+  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(Normal_next.col(1)*0.105, foot_pos_baseF_next_projected.col(1), Color::orange));
+  // Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(Normal_next_next.col(1)*0.09, foot_pos_baseF_next_next_projected.col(1), Color::orange));
+  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(Normal_now.col(2)*0.12, foot_pos_baseF_now_projected.col(2), Color::yellow));
+  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(Normal_next.col(2)*0.105, foot_pos_baseF_next_projected.col(2), Color::yellow));
+  // Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(Normal_next_next.col(2)*0.09, foot_pos_baseF_next_next_projected.col(2), Color::yellow));
+  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(Normal_now.col(3)*0.12, foot_pos_baseF_now_projected.col(3), Color::purple));
+  Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(Normal_next.col(3)*0.105, foot_pos_baseF_next_projected.col(3), Color::purple));
+  // Foothold_visulization_msg.markers.emplace_back(getArrowAtPointMsg(Normal_next_next.col(3)*0.09, foot_pos_baseF_next_next_projected.col(3), Color::purple));
 
   assignHeader(Foothold_visulization_msg.markers.begin(), Foothold_visulization_msg.markers.end(), getHeaderMsg("odom", ros::Time::now()));
   assignIncreasingId(Foothold_visulization_msg.markers.begin(), Foothold_visulization_msg.markers.end());

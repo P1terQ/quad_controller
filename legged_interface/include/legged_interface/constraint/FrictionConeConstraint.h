@@ -39,6 +39,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
+matrix3_t setSurfaceNormalInWorld(vector3_t& surfaceNormalInWorld);
+
 /**
  * Implements the constraint h(t,x,u) >= 0
  *
@@ -103,7 +105,6 @@ class FrictionConeConstraint final : public StateInputConstraint {
                                                                  const PreComputation& preComp) const override;
 
   /** Sets the estimated terrain normal expressed in the world frame. */
-  void setSurfaceNormalInWorld(const vector3_t& surfaceNormalInWorld);
 
  private:
   struct LocalForceDerivatives {
@@ -125,7 +126,7 @@ class FrictionConeConstraint final : public StateInputConstraint {
 
   FrictionConeConstraint(const FrictionConeConstraint& other) = default;
   vector_t coneConstraint(const vector3_t& localForces) const;
-  LocalForceDerivatives computeLocalForceDerivatives(const vector3_t& forcesInBodyFrame) const;
+  LocalForceDerivatives computeLocalForceDerivatives(const vector3_t& forcesInBodyFrame, const matrix3_t rot) const;
   ConeLocalDerivatives computeConeLocalDerivatives(const vector3_t& localForces) const;
   ConeDerivatives computeConeConstraintDerivatives(const ConeLocalDerivatives& coneLocalDerivatives,
                                                    const LocalForceDerivatives& localForceDerivatives) const;
@@ -142,7 +143,7 @@ class FrictionConeConstraint final : public StateInputConstraint {
 
   // rotation world to terrain
   //todo 加上地面法向量的约束
-  matrix3_t t_R_w = matrix3_t::Identity();
+  // matrix3_t t_R_w = matrix3_t::Identity();
 };
 
 }  // namespace legged_robot

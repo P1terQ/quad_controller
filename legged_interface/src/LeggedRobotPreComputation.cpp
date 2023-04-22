@@ -98,6 +98,7 @@ void LeggedRobotPreComputation::request(RequestSet request, scalar_t t, const ve
 
   };
 
+
   if (request.contains(Request::Constraint))  
   {
     for (size_t i = 0; i < info_.numThreeDofContacts; i++) 
