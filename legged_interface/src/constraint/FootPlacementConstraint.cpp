@@ -71,7 +71,7 @@ vector_t FootPlacementConstraint::getValue(scalar_t time, const vector_t& state,
     vector3_t pEE_world = endEffectorKinematicsPtr_->getPosition(state).front();
 
     // std::cout << "pEE_world " << contactPointIndex_ <<" : " << pEE_world << std::endl;
-    // std::cout << "constraint value " << contactPointIndex_ <<" : " << A * pEE_world + b + s << std::endl;
+    std::cout << "constraint value " << contactPointIndex_ <<" : " << A * pEE_world + b + s << std::endl;
 
     return A * pEE_world + b + s;
 }

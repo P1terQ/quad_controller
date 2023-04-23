@@ -105,7 +105,7 @@ class SwitchedModelReferenceManager : public ReferenceManager {
 
   feet_array_t<Eigen::Matrix<scalar_t, NumVertex, 3>> FootPlacement_A_Array;
   feet_array_t<Eigen::Matrix<scalar_t, NumVertex, 1>> FootPlacement_b_Array;
-k
+
   feet_array_t<scalar_t> last_terrainHeight;
   feet_array_t<scalar_t> next_terrainHeight;
 

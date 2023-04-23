@@ -89,7 +89,7 @@ SwitchedModelReferenceManager::SwitchedModelReferenceManager(std::shared_ptr<Gai
   //                      0.1,  -0.1,    0.08,   -0.08,
   //                     -0.3,  -0.3,   -0.3,   -0.3;
 
-  default_foot_pos_ <<  0.29,   0.29, -0.21, -0.21,
+  default_foot_pos_ <<  0.28,   0.28, -0.22, -0.22,
                        0.115,  -0.115,    0.115,   -0.115,
                       -0.37,  -0.37,   -0.37,   -0.37;
 
