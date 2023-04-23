@@ -61,7 +61,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-#define NumVertex 8
+#define NumVertex 6
 using namespace convex_plane_decomposition;
 
 /**

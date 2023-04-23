@@ -13,7 +13,7 @@
 namespace ocs2{
 namespace legged_robot{
 
-#define Num_Vertex 8
+#define Num_Vertex 6
 #define T_trot 0.7
 
 class FootPlacementConstraint final : public StateInputConstraint

@@ -18,7 +18,7 @@ model_settings
 swing_trajectory_config
 {
   liftOffVelocity               0.2
-  touchDownVelocity            -0.4
+  touchDownVelocity            -0.1
   swingHeight                   0.2
   swingTimeScale                0.15
 }
@@ -253,8 +253,8 @@ R
 FootPlacementSoftConstraint
 {
   ; relaxed log barrier parameters
-  mu                     0.0004 ; 0.00004  0.01
-  delta                  0.0001 ; 0.005  0.001
+  mu                     1.0 ; 0.00004  0.01
+  delta                  0.00001 ; 0.005  0.001
 }
 
 frictionConeSoftConstraint

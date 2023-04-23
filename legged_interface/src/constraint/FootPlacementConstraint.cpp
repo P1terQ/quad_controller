@@ -65,15 +65,30 @@ vector_t FootPlacementConstraint::getValue(scalar_t time, const vector_t& state,
     Eigen::Matrix<scalar_t, Num_Vertex, 1> s;
     s << swingTimeLeft, swingTimeLeft, swingTimeLeft, swingTimeLeft,
          swingTimeLeft, swingTimeLeft, swingTimeLeft, swingTimeLeft;
-    s *= 5;
+    // s *= 5;
 
     // 6. Add constraint Ax + b + s >= 0
     vector3_t pEE_world = endEffectorKinematicsPtr_->getPosition(state).front();
 
     // std::cout << "pEE_world " << contactPointIndex_ <<" : " << pEE_world << std::endl;
-    std::cout << "constraint value " << contactPointIndex_ <<" : " << A * pEE_world + b + s << std::endl;
+    // if(contactPointIndex_ == 0 && swingTimeLeft < 0.1)
+    // {
+    //     std::cout << "constraint value " << contactPointIndex_ <<" : " << A * pEE_world + b + s << std::endl;
+    // }
+    Eigen::Matrix<scalar_t, Num_Vertex, 1> val = A * pEE_world + b + s;
 
-    return A * pEE_world + b + s;
+    // for(size_t i = 0; i < Num_Vertex; i++)
+    // {
+    //     if(val(i) > 1)
+    //         val(i) = 1;
+    // }
+
+    // if(contactPointIndex_ == 0 && swingTimeLeft < 0.1)
+    // {
+    //     std::cout << "constraint value " << contactPointIndex_ <<" : " << val << std::endl;
+    // }
+
+    return val;
 }
 
 VectorFunctionLinearApproximation FootPlacementConstraint::getLinearApproximation(scalar_t time, const vector_t& state, 
@@ -114,7 +129,7 @@ VectorFunctionQuadraticApproximation FootPlacementConstraint::getQuadraticApprox
     Eigen::Matrix<scalar_t, Num_Vertex, 1> s;
     s << swingTimeLeft, swingTimeLeft, swingTimeLeft, swingTimeLeft,
          swingTimeLeft, swingTimeLeft, swingTimeLeft, swingTimeLeft;
-    s *= 5;
+    // s *= 5;
 
     VectorFunctionLinearApproximation positionLinearApproximation = 
         endEffectorKinematicsPtr_->getPositionLinearApproximation(state).front();
@@ -126,8 +141,18 @@ VectorFunctionQuadraticApproximation FootPlacementConstraint::getQuadraticApprox
 
     quadraticApproximation.f = A * positionLinearApproximation.f + b + s;
 
+    // Eigen::Matrix<scalar_t, Num_Vertex, 1> val_f = A * positionLinearApproximation.f + b + s;
+    // for(size_t i = 0; i < Num_Vertex; i++)
+    // {
+    //     if(val_f(i) > 5)
+    //         val_f(i) = 5;
+    // }
+    // quadraticApproximation.f = val_f;
 
-    // std::cout << "quadraticApproximation.f: " << quadraticApproximation.f << std::endl;
+    // if(contactPointIndex_ == 0 && swingTimeLeft < 0.1)
+    // {
+    //     std::cout << "quadraticApproximation.f " << contactPointIndex_ <<" : " << quadraticApproximation.f << std::endl;
+    // }
 
     quadraticApproximation.dfdx = A * positionLinearApproximation.dfdx;
 

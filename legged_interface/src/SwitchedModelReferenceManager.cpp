@@ -482,7 +482,6 @@ vector3_t SwitchedModelReferenceManager::get_FootHold_Approximation(vector3_t Fo
 
     if(visualize)
     {
-
       switch (FootId)
       {
       case 0:
@@ -525,46 +524,71 @@ vector3_t SwitchedModelReferenceManager::get_FootHold_Approximation(vector3_t Fo
       }
 
     }
+    
+
+    // convexRegion.edge
+
 
 
     for(int i=0; i<NumVertex-1; i++)
     {
-      double A = (convexRegionMsg.polygon.points[i+1].y - convexRegionMsg.polygon.points[i].y)/(convexRegionMsg.polygon.points[i+1].x - convexRegionMsg.polygon.points[i].x);
-      double Coeff_y = -1.0;
-      double b = (convexRegionMsg.polygon.points[i].y * convexRegionMsg.polygon.points[i+1].x - convexRegionMsg.polygon.points[i+1].y * convexRegionMsg.polygon.points[i].x) / (convexRegionMsg.polygon.points[i+1].x - convexRegionMsg.polygon.points[i].x);
+      // double A = (convexRegionMsg.polygon.points[i+1].y - convexRegionMsg.polygon.points[i].y)/(convexRegionMsg.polygon.points[i+1].x - convexRegionMsg.polygon.points[i].x);
+      // double b = (convexRegionMsg.polygon.points[i].y * convexRegionMsg.polygon.points[i+1].x - convexRegionMsg.polygon.points[i+1].y * convexRegionMsg.polygon.points[i].x) / (convexRegionMsg.polygon.points[i+1].x - convexRegionMsg.polygon.points[i].x);
 
-      if(A * FootHold_projection.positionInWorld(0) - FootHold_projection.positionInWorld(1) + b >= 0)
+      double A1 = (convexRegionMsg.polygon.points[i+1].y - convexRegionMsg.polygon.points[i].y)/(convexRegionMsg.polygon.points[i].y * convexRegionMsg.polygon.points[i+1].x - convexRegionMsg.polygon.points[i+1].y * convexRegionMsg.polygon.points[i].x);
+      double A2 = (convexRegionMsg.polygon.points[i].x - convexRegionMsg.polygon.points[i+1].x)/(convexRegionMsg.polygon.points[i].y * convexRegionMsg.polygon.points[i+1].x - convexRegionMsg.polygon.points[i+1].y * convexRegionMsg.polygon.points[i].x);
+
+      // if(FootId == 0)
+      // {
+      //   std::cout << "i = " << i << " " << A * FootHold_projection.positionInWorld(0) - FootHold_projection.positionInWorld(1) + b << std::endl;
+      // }
+
+      // if(A * FootHold_projection.positionInWorld(0) - FootHold_projection.positionInWorld(1) + b >= 0)
+      if(A1 * FootHold_projection.positionInWorld(0) + A2 * FootHold_projection.positionInWorld(1) + 1 >= 0)
       {
-        FootPlacement_A_Array.at(FootId)(i,0) = A;
-        FootPlacement_A_Array.at(FootId)(i,1) = -1.0;
+        FootPlacement_A_Array.at(FootId)(i,0) = A1;
+        FootPlacement_A_Array.at(FootId)(i,1) = A2;
         FootPlacement_A_Array.at(FootId)(i,2) = 0.0;
-        FootPlacement_b_Array.at(FootId)(i,0) = b;
+        FootPlacement_b_Array.at(FootId)(i,0) = 1;
       }
       else
       {
-        FootPlacement_A_Array.at(FootId)(i,0) = -A;
-        FootPlacement_A_Array.at(FootId)(i,1) = 1.0;
+        FootPlacement_A_Array.at(FootId)(i,0) = -A1;
+        FootPlacement_A_Array.at(FootId)(i,1) = -A2;
         FootPlacement_A_Array.at(FootId)(i,2) = 0.0;
-        FootPlacement_b_Array.at(FootId)(i,0) = -b;
+        FootPlacement_b_Array.at(FootId)(i,0) = -1;
       }
     }
-    double A = (convexRegionMsg.polygon.points[NumVertex-1].y - convexRegionMsg.polygon.points[0].y)/(convexRegionMsg.polygon.points[NumVertex-1].x - convexRegionMsg.polygon.points[0].x);
-    double Coeff_y = -1.0;
-    double b = (convexRegionMsg.polygon.points[0].y * convexRegionMsg.polygon.points[NumVertex-1].x - convexRegionMsg.polygon.points[NumVertex-1].y * convexRegionMsg.polygon.points[0].x) / (convexRegionMsg.polygon.points[NumVertex-1].x - convexRegionMsg.polygon.points[0].x);
 
-    if(A * FootHold_projection.positionInWorld(0) - FootHold_projection.positionInWorld(1) + b >= 0)
+    // double A = (convexRegionMsg.polygon.points[NumVertex-1].y - convexRegionMsg.polygon.points[0].y)/(convexRegionMsg.polygon.points[NumVertex-1].x - convexRegionMsg.polygon.points[0].x);
+    // double b = (convexRegionMsg.polygon.points[0].y * convexRegionMsg.polygon.points[NumVertex-1].x - convexRegionMsg.polygon.points[NumVertex-1].y * convexRegionMsg.polygon.points[0].x) / (convexRegionMsg.polygon.points[NumVertex-1].x - convexRegionMsg.polygon.points[0].x);
+    double A1 = (convexRegionMsg.polygon.points[NumVertex-1].y - convexRegionMsg.polygon.points[0].y)/(convexRegionMsg.polygon.points[0].y * convexRegionMsg.polygon.points[NumVertex-1].x - convexRegionMsg.polygon.points[NumVertex-1].y * convexRegionMsg.polygon.points[0].x);
+    double A2 = (convexRegionMsg.polygon.points[0].x - convexRegionMsg.polygon.points[NumVertex-1].x)/(convexRegionMsg.polygon.points[0].y * convexRegionMsg.polygon.points[NumVertex-1].x - convexRegionMsg.polygon.points[NumVertex-1].y * convexRegionMsg.polygon.points[0].x);
+
+    // if(FootId == 0)
+    // {
+    //   std::cout << "point[0]: " << convexRegionMsg.polygon.points[0].x << "," << convexRegionMsg.polygon.points[0].y << std::endl;
+    //   std::cout << "point[1]: " << convexRegionMsg.polygon.points[1].x << "," << convexRegionMsg.polygon.points[1].y << std::endl;
+    //   std::cout << "point[2]: " << convexRegionMsg.polygon.points[2].x << "," << convexRegionMsg.polygon.points[2].y << std::endl;
+    //   std::cout << "point[3]: " << convexRegionMsg.polygon.points[3].x << "," << convexRegionMsg.polygon.points[3].y << std::endl;
+    //   std::cout << "A = " << A << std::endl;
+    //   std::cout << "b = " << b << std::endl;
+    //   std::cout << "i = " << NumVertex-1 << " " << A * FootHold_projection.positionInWorld(0) - FootHold_projection.positionInWorld(1) + b << std::endl;
+    // }
+
+    if(A1 * FootHold_projection.positionInWorld(0) + A2 * FootHold_projection.positionInWorld(1) + 1 >= 0)
     {
-        FootPlacement_A_Array.at(FootId)(NumVertex-1,0) = A;
-        FootPlacement_A_Array.at(FootId)(NumVertex-1,1) = -1.0;
+        FootPlacement_A_Array.at(FootId)(NumVertex-1,0) = A1;
+        FootPlacement_A_Array.at(FootId)(NumVertex-1,1) = A2;
         FootPlacement_A_Array.at(FootId)(NumVertex-1,2) = 0.0;
-        FootPlacement_b_Array.at(FootId)(NumVertex-1,0) = b;
+        FootPlacement_b_Array.at(FootId)(NumVertex-1,0) = 1;
     }
     else
     {
-      FootPlacement_A_Array.at(FootId)(NumVertex-1,0) = -A;
-      FootPlacement_A_Array.at(FootId)(NumVertex-1,1) = 1.0;
+      FootPlacement_A_Array.at(FootId)(NumVertex-1,0) = -A1;
+      FootPlacement_A_Array.at(FootId)(NumVertex-1,1) = -A2;
       FootPlacement_A_Array.at(FootId)(NumVertex-1,2) = 0.0;
-      FootPlacement_b_Array.at(FootId)(NumVertex-1,0) = -b;
+      FootPlacement_b_Array.at(FootId)(NumVertex-1,0) = -1;
     }  
 
   }

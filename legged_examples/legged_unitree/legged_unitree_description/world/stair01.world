@@ -135,10 +135,10 @@
       <static>1</static>
     </model>
     <state world_name='default'>
-      <sim_time>6 175000000</sim_time>
-      <real_time>6 208208916</real_time>
-      <wall_time>1680959455 675446898</wall_time>
-      <iterations>6175</iterations>
+      <sim_time>98 969000000</sim_time>
+      <real_time>94 826980402</real_time>
+      <wall_time>1682236238 590937558</wall_time>
+      <iterations>92794</iterations>
       <model name='ground_plane'>
         <pose>0 0 0 0 -0 0</pose>
         <scale>1 1 1</scale>
@@ -159,16 +159,190 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
+      <model name='stair0.1_clone'>
+        <pose>-0.552888 -1.46327 0 0 -0 1.5809</pose>
+        <scale>1 1 1</scale>
+        <link name='Stairs_1'>
+          <pose>-0.552888 -1.46327 0 0 -0 1.5809</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='stair0.1_clone_0'>
+        <pose>-2.23933 0.364981 0 0 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='Stairs_1'>
+          <pose>-2.23933 0.364981 0 0 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='stair0.1_clone_clone'>
+        <pose>-0.535228 1.02712 0 0 -0 1.5809</pose>
+        <scale>1 1 1</scale>
+        <link name='Stairs_1'>
+          <pose>-0.535228 1.02712 0 0 -0 1.5809</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
       <light name='sun'>
         <pose>0 0 10 0 -0 0</pose>
       </light>
     </state>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>7.35403 -4.38045 4.38668 0 0.595643 2.7482</pose>
+        <pose>-5.08595 3.09323 10.7579 -0 0.985796 -0.911803</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
     </gui>
+    <model name='stair0.1_clone'>
+      <pose>-0.196118 -3.89812 0 0 -0 0</pose>
+      <link name='Stairs_1'>
+        <visual name='Stairs_1_Visual_0'>
+          <pose>-0 -0.605 0.05 0 -0 0</pose>
+          <geometry>
+            <box>
+              <size>1 3.5 0.1</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+            <ambient>1 1 1 1</ambient>
+          </material>
+          <meta>
+            <layer>0</layer>
+          </meta>
+        </visual>
+        <collision name='Stairs_1_Collision_0'>
+          <geometry>
+            <box>
+              <size>1 3.5 0.1</size>
+            </box>
+          </geometry>
+          <pose>-0 -0.605 0.05 0 -0 0</pose>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <static>1</static>
+    </model>
+    <model name='stair0.1_clone_clone'>
+      <pose>-0.535228 1.02712 0 0 -0 1.5809</pose>
+      <link name='Stairs_1'>
+        <visual name='Stairs_1_Visual_0'>
+          <pose>-0 -0.605 0.05 0 -0 0</pose>
+          <geometry>
+            <box>
+              <size>1 3.5 0.1</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+            <ambient>1 1 1 1</ambient>
+          </material>
+          <meta>
+            <layer>0</layer>
+          </meta>
+        </visual>
+        <collision name='Stairs_1_Collision_0'>
+          <geometry>
+            <box>
+              <size>1 3.5 0.1</size>
+            </box>
+          </geometry>
+          <pose>-0 -0.605 0.05 0 -0 0</pose>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <static>1</static>
+    </model>
+    <model name='stair0.1_clone_0'>
+      <pose>-2.23933 0.364981 0 0 -0 0</pose>
+      <link name='Stairs_1'>
+        <visual name='Stairs_1_Visual_0'>
+          <pose>-0 -0.605 0.05 0 -0 0</pose>
+          <geometry>
+            <box>
+              <size>1 3.5 0.1</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+            <ambient>1 1 1 1</ambient>
+          </material>
+          <meta>
+            <layer>0</layer>
+          </meta>
+        </visual>
+        <collision name='Stairs_1_Collision_0'>
+          <geometry>
+            <box>
+              <size>1 3.5 0.1</size>
+            </box>
+          </geometry>
+          <pose>-0 -0.605 0.05 0 -0 0</pose>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <static>1</static>
+    </model>
   </world>
 </sdf>
