@@ -179,7 +179,7 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
 
       legged_msgs::leggedreference reference_msg;
       reference_msg.pitch_offset = terrain_angle_;
-      reference_msg.z_offset = (z_offset_hipLF + z_offset_hipRF + z_offset_hipLH + z_offset_hipRH) / 4 * 1.05;
+      reference_msg.z_offset = (z_offset_hipLF + z_offset_hipRF + z_offset_hipLH + z_offset_hipRH) / 4 * 1.0; //! 这边要不要乘上一个放大系数
       // reference_msg.z_offset = z_offset_base * 1.5;
       // std::cout << "z_offset: " << reference_msg.z_offset << std::endl;
       reference_z_offset_publisher.publish(reference_msg); 
@@ -245,7 +245,11 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
                 // if(std::abs(currentMode_timeLeft - current_stance_mode_duration/2) < 0.01)
                 if(currentMode_timeLeft > current_stance_mode_duration/2)
                 {
+                  // std::cout << "currentMode_timeLeft: " << currentMode_timeLeft << std::endl;
+                  // std::cout << "current_stance_mode_duration: " << current_stance_mode_duration << std::endl;
+
                   foot_pos_baseF_now.col(j) = base2world_RotMat_ * default_foot_pos_.col(j) + base2world_Trans_;
+                  grid_map::Position foot_pos_baseF_now_gm = foot_pos_baseF_now.col(j).head(2);
 
                   //! 当前foot在world frame的高度
                   foot_pos_baseF_now_projected.col(j) = get_FootHold_Approximation(foot_pos_baseF_now.col(j), false, j);
@@ -256,27 +260,33 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
                   // foot_pos_baseF_next.col(j)[1] = foot_pos_baseF_now.col(j)[1] + delta_y;
                   foot_pos_baseF_next.col(j)[0] = foot_pos_baseF_now.col(j)[0] + vel_base_cmd_(0) * (currentMode_timeLeft+(next_swing_mode_duration));  //! 目前只用于trot
                   foot_pos_baseF_next.col(j)[1] = foot_pos_baseF_now.col(j)[1] + vel_base_cmd_(1) * (currentMode_timeLeft+(next_swing_mode_duration));
+
+                  grid_map::Position foot_pos_baseF_next_gm = foot_pos_baseF_next.col(j).head(2);
+                  foot_pos_baseF_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("smooth",foot_pos_baseF_next_gm);
                   foot_pos_baseF_next_projected.col(j) = get_FootHold_Approximation(foot_pos_baseF_next.col(j), true, j);
                   FootH_next_WorldF[j] = foot_pos_baseF_next_projected.col(j)[2];
 
                   foot_pos_baseF_next_next.col(j)[0] = foot_pos_baseF_next.col(j)[0] + vel_base_cmd_(0) * (currentMode_timeLeft+2*(next_swing_mode_duration));
                   foot_pos_baseF_next_next.col(j)[1] = foot_pos_baseF_next.col(j)[1] + vel_base_cmd_(1) * (currentMode_timeLeft+2*(next_swing_mode_duration));
+
+                  grid_map::Position foot_pos_baseF_next_next_gm = foot_pos_baseF_next_next.col(j).head(2);
+                  foot_pos_baseF_next_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("smooth",foot_pos_baseF_next_next_gm);
                   foot_pos_baseF_next_next_projected.col(j) = get_FootHold_Approximation(foot_pos_baseF_next_next.col(j), false, j);
                   FootH_next_next_WorldF[j] = foot_pos_baseF_next_next_projected.col(j)[2];
 
-                  grid_map::Position foot_pos_baseF_now_gm = foot_pos_baseF_now.col(j).head(2);
+                  
                   scalar_t normal_x_now = planarTerrainPtr_->gridMap.atPosition("normal_x",foot_pos_baseF_now_gm);
                   scalar_t normal_y_now = planarTerrainPtr_->gridMap.atPosition("normal_y",foot_pos_baseF_now_gm);
                   scalar_t normal_z_now = planarTerrainPtr_->gridMap.atPosition("normal_z",foot_pos_baseF_now_gm);
                   Normal_now.col(j) << normal_x_now, normal_y_now, normal_z_now;
 
-                  grid_map::Position foot_pos_baseF_next_gm = foot_pos_baseF_next.col(j).head(2);
+                  
                   scalar_t normal_x_next = planarTerrainPtr_->gridMap.atPosition("normal_x",foot_pos_baseF_next_gm);
                   scalar_t normal_y_next = planarTerrainPtr_->gridMap.atPosition("normal_y",foot_pos_baseF_next_gm);
                   scalar_t normal_z_next = planarTerrainPtr_->gridMap.atPosition("normal_z",foot_pos_baseF_next_gm);
                   Normal_next.col(j) << normal_x_next, normal_y_next, normal_z_next;
 
-                  grid_map::Position foot_pos_baseF_next_next_gm = foot_pos_baseF_next_next.col(j).head(2);
+                  
                   scalar_t normal_x_next_next = planarTerrainPtr_->gridMap.atPosition("normal_x",foot_pos_baseF_next_next_gm);
                   scalar_t normal_y_next_next = planarTerrainPtr_->gridMap.atPosition("normal_y",foot_pos_baseF_next_next_gm);
                   scalar_t normal_z_next_next = planarTerrainPtr_->gridMap.atPosition("normal_z",foot_pos_baseF_next_next_gm);
@@ -455,10 +465,12 @@ vector3_t SwitchedModelReferenceManager::get_FootHold_Approximation(vector3_t Fo
 {
   // auto penaltyFunction = [](const Eigen::Vector3d& projectedPoint) { return 0.0; };
 
-  PlanarTerrainProjection FootHold_projection = getBestPlanarRegionAtPositionInWorld(FootHold_init, planarTerrainPtr_->planarRegions, penaltyFunction);
+  PlanarTerrainProjection FootHold_projection = getBestPlanarRegionAtPositionInWorld(FootHold_init, planarTerrainPtr_->planarRegions, penaltyFunction); //! 这个有时候会投影的很奇怪，试试看加上Penalty function
 
   if(ifNeed_Ab)
   {
+    // std::cout << "projected z:" << FootHold_projection.positionInWorld(2) << std::endl;
+
     //! CgalPolygon2d
     const auto convexRegion = convex_plane_decomposition::growConvexPolygonInsideShape(
       FootHold_projection.regionPtr->boundaryWithInset.boundary, FootHold_projection.positionInTerrainFrame, NumVertex, growthFactor);
