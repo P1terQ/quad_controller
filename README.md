@@ -25,3 +25,6 @@ friction cone暂时没问题
 elevationmapping在跨沟的时候识别不到?
 加入navigation planner?
 之后上实物state estimator还是需要的
+
+# 4-25
+看了两篇CBF论文，想把CBF尝试加上去。貌似有很多2D的navigation算法，3D的很少看到

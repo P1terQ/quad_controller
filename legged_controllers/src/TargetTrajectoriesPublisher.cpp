@@ -47,7 +47,7 @@ TargetTrajectories targetPoseToTargetTrajectories(const vector_t& targetPose,
   // currentPose(2) = COM_HEIGHT;  //? 
   // std::cout << "currentPose(2)" << currentPose(2) << std::endl; // 实际的state_estimation的高度
   // currentPose(4) = 0;
-  currentPose(5) = 0;
+  currentPose(5) = 0; // roll还是0
   vector_array_t stateTrajectory(2, vector_t::Zero(observation.state.size()));
   
   //! 那这边这个currentPose有啥用
