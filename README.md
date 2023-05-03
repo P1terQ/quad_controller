@@ -28,3 +28,6 @@ elevationmapping在跨沟的时候识别不到?
 
 # 4-25
 看了两篇CBF论文，想把CBF尝试加上去。貌似有很多2D的navigation算法，3D的很少看到
+
+# 5-3
+尝试sim2real，主机无法直接获取到摄像头话题，采用ros多机通信，elevationmapping报错

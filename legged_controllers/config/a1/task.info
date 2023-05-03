@@ -7,7 +7,7 @@ legged_robot_interface
 
 model_settings
 {
-  positionErrorGain             3.0
+  positionErrorGain             0.03
   phaseTransitionStanceTime     0.1
 
   verboseCppAd                  true
@@ -17,9 +17,9 @@ model_settings
 
 swing_trajectory_config
 {
-  liftOffVelocity               0.05
-  touchDownVelocity             -0.1
-  swingHeight                   0.15
+  liftOffVelocity               0.2
+  touchDownVelocity             -0.4
+  swingHeight                   0.08
   swingTimeScale                0.15
 }
 
@@ -247,7 +247,7 @@ R
 FootPlacementSoftConstraint
 {
   ; relaxed log barrier parameters 小了过沟的时候过不去，大了上楼梯不好上
-  mu                     0.1
+  mu                     1.0
   delta                  0.001
 }
 

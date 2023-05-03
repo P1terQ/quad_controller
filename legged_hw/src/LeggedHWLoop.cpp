@@ -6,7 +6,8 @@
 
 namespace legged {
 LeggedHWLoop::LeggedHWLoop(ros::NodeHandle& nh, std::shared_ptr<LeggedHW> hardware_interface)
-    : nh_(nh), hardwareInterface_(std::move(hardware_interface)), loopRunning_(true) {
+    : nh_(nh), hardwareInterface_(std::move(hardware_interface)), loopRunning_(true) 
+{
   // Create the controller manager
   controllerManager_.reset(new controller_manager::ControllerManager(hardwareInterface_.get(), nh_));
 
@@ -17,7 +18,8 @@ LeggedHWLoop::LeggedHWLoop(ros::NodeHandle& nh, std::shared_ptr<LeggedHW> hardwa
   error += static_cast<int>(!nhP.getParam("loop_frequency", loopHz_));
   error += static_cast<int>(!nhP.getParam("cycle_time_error_threshold", cycleTimeErrorThreshold_));
   error += static_cast<int>(!nhP.getParam("thread_priority", threadPriority));
-  if (error > 0) {
+  if (error > 0) 
+  {
     std::string error_message =
         "could not retrieve one of the required parameters: loop_hz or cycle_time_error_threshold or thread_priority";
     ROS_ERROR_STREAM(error_message);
@@ -28,13 +30,17 @@ LeggedHWLoop::LeggedHWLoop(ros::NodeHandle& nh, std::shared_ptr<LeggedHW> hardwa
   lastTime_ = Clock::now();
 
   // Setup loop thread
-  loopThread_ = std::thread([&]() {
-    while (loopRunning_) {
+  loopThread_ = std::thread([&]() 
+  {
+    while (loopRunning_) 
+    {
       update();
     }
   });
+
   sched_param sched{.sched_priority = threadPriority};
-  if (pthread_setschedparam(loopThread_.native_handle(), SCHED_FIFO, &sched) != 0) {
+  if (pthread_setschedparam(loopThread_.native_handle(), SCHED_FIFO, &sched) != 0) 
+  {
     ROS_WARN(
         "Failed to set threads priority (one possible reason could be that the user and the group permissions "
         "are not set properly.).\n");
@@ -53,7 +59,8 @@ void LeggedHWLoop::update() {
 
   // Check cycle time for excess delay
   const double cycle_time_error = (elapsedTime_ - ros::Duration(desiredDuration.count())).toSec();
-  if (cycle_time_error > cycleTimeErrorThreshold_) {
+  if (cycle_time_error > cycleTimeErrorThreshold_) 
+  {
     ROS_WARN_STREAM("Cycle time exceeded error threshold by: " << cycle_time_error - cycleTimeErrorThreshold_ << "s, "
                                                                << "cycle time: " << elapsedTime_ << "s, "
                                                                << "threshold: " << cycleTimeErrorThreshold_ << "s");
@@ -76,9 +83,11 @@ void LeggedHWLoop::update() {
   std::this_thread::sleep_until(sleepTill);
 }
 
-LeggedHWLoop::~LeggedHWLoop() {
+LeggedHWLoop::~LeggedHWLoop() 
+{
   loopRunning_ = false;
-  if (loopThread_.joinable()) {
+  if (loopThread_.joinable()) 
+  {
     loopThread_.join();
   }
 }

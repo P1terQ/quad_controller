@@ -6,7 +6,8 @@
 #include "legged_unitree_hw/UnitreeHW.h"
 
 namespace legged {
-bool UnitreeHW::init(ros::NodeHandle& root_nh, ros::NodeHandle& robot_hw_nh) {
+bool UnitreeHW::init(ros::NodeHandle& root_nh, ros::NodeHandle& robot_hw_nh) 
+{
   if (!LeggedHW::init(root_nh, robot_hw_nh)) {
     return false;
   }
@@ -37,7 +38,8 @@ void UnitreeHW::read(const ros::Time& /*time*/, const ros::Duration& /*period*/)
   udp_->Recv();
   udp_->GetRecv(lowState_);
 
-  for (int i = 0; i < 12; ++i) {
+  for (int i = 0; i < 12; ++i) 
+  {
     jointData_[i].pos_ = lowState_.motorState[i].q;
     jointData_[i].vel_ = lowState_.motorState[i].dq;
     jointData_[i].tau_ = lowState_.motorState[i].tauEst;
@@ -54,13 +56,15 @@ void UnitreeHW::read(const ros::Time& /*time*/, const ros::Duration& /*period*/)
   imuData_.linearAcc_[1] = lowState_.imu.accelerometer[1];
   imuData_.linearAcc_[2] = lowState_.imu.accelerometer[2];
 
-  for (size_t i = 0; i < CONTACT_SENSOR_NAMES.size(); ++i) {
+  for (size_t i = 0; i < CONTACT_SENSOR_NAMES.size(); ++i) 
+  {
     contactState_[i] = lowState_.footForce[i] > contactThreshold_;
   }
 
   // Set feedforward and velocity cmd to zero to avoid for safety when not controller setCommand
   std::vector<std::string> names = hybridJointInterface_.getNames();
-  for (const auto& name : names) {
+  for (const auto& name : names) 
+  {
     HybridJointHandle handle = hybridJointInterface_.getHandle(name);
     handle.setFeedforward(0.);
     handle.setVelocityDesired(0.);
@@ -68,7 +72,8 @@ void UnitreeHW::read(const ros::Time& /*time*/, const ros::Duration& /*period*/)
   }
 }
 
-void UnitreeHW::write(const ros::Time& /*time*/, const ros::Duration& /*period*/) {
+void UnitreeHW::write(const ros::Time& /*time*/, const ros::Duration& /*period*/) 
+{
   for (int i = 0; i < 12; ++i) {
     lowCmd_.motorCmd[i].q = static_cast<float>(jointData_[i].posDes_);
     lowCmd_.motorCmd[i].dq = static_cast<float>(jointData_[i].velDes_);
@@ -82,7 +87,8 @@ void UnitreeHW::write(const ros::Time& /*time*/, const ros::Duration& /*period*/
   udp_->Send();
 }
 
-bool UnitreeHW::setupJoints() {
+bool UnitreeHW::setupJoints() 
+{
   for (const auto& joint : urdfModel_->joints_) {
     int leg_index = 0;
     int joint_index = 0;
@@ -133,7 +139,8 @@ bool UnitreeHW::setupImu() {
   return true;
 }
 
-bool UnitreeHW::setupContactSensor(ros::NodeHandle& nh) {
+bool UnitreeHW::setupContactSensor(ros::NodeHandle& nh) 
+{
   nh.getParam("contact_threshold", contactThreshold_);
   for (size_t i = 0; i < CONTACT_SENSOR_NAMES.size(); ++i) {
     contactSensorInterface_.registerHandle(ContactSensorHandle(CONTACT_SENSOR_NAMES[i], &contactState_[i]));

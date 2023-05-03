@@ -254,7 +254,7 @@ FootPlacementSoftConstraint
 {
   ; relaxed log barrier parameters
   mu                     1.2 ; 0.00004  0.01
-  delta                  0.01 ; 0.005  0.001
+  delta                  0.001 ; 0.005  0.001
 }
 
 frictionConeSoftConstraint

@@ -52,7 +52,8 @@ int main(int argc, char** argv) {
   ros::AsyncSpinner spinner(3);
   spinner.start();
 
-  try {
+  try 
+  {
     // Create the hardware interface specific to your robot
     std::shared_ptr<legged::UnitreeHW> unitreeHw = std::make_shared<legged::UnitreeHW>();
     // Initialize the hardware interface:
@@ -65,7 +66,9 @@ int main(int argc, char** argv) {
 
     // Wait until shutdown signal received
     ros::waitForShutdown();
-  } catch (const ros::Exception& e) {
+  } 
+  catch (const ros::Exception& e) 
+  {
     ROS_FATAL_STREAM("Error in the hardware interface:\n"
                      << "\t" << e.what());
     return 1;

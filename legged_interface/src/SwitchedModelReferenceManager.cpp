@@ -85,13 +85,13 @@ SwitchedModelReferenceManager::SwitchedModelReferenceManager(std::shared_ptr<Gai
 
   //! A1
                     // LF     RF      LH     RH
-  // default_foot_pos_ <<  0.24,   0.24, -0.16, -0.16,
-  //                      0.1,  -0.1,    0.08,   -0.08,
-  //                     -0.3,  -0.3,   -0.3,   -0.3;
+  default_foot_pos_ <<  0.24,   0.24, -0.16, -0.16,
+                       0.1,  -0.1,    0.08,   -0.08,
+                      -0.3,  -0.3,   -0.3,   -0.3;
 
-  default_foot_pos_ <<  0.28,   0.28, -0.22, -0.22,
-                       0.115,  -0.115,    0.115,   -0.115,
-                      -0.37,  -0.37,   -0.37,   -0.37;
+  // default_foot_pos_ <<  0.28,   0.28, -0.22, -0.22,
+  //                      0.115,  -0.115,    0.115,   -0.115,
+  //                     -0.37,  -0.37,   -0.37,   -0.37;
 
   positionPublisher_LF = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("queryPosition_LF", 1);
   projectionPublisher_LF = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("projectedQueryPosition_LF", 1);
