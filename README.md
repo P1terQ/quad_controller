@@ -31,3 +31,6 @@ elevationmapping在跨沟的时候识别不到?
 
 # 5-3
 尝试sim2real，主机无法直接获取到摄像头话题，采用ros多机通信，elevationmapping报错
+
+# 5-7
+盲走版本能用，尝试解决elevation_mapping报错，尝试外置NUC
