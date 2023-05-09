@@ -32,7 +32,10 @@ class KalmanFilterEstimate : public StateEstimateBase {
  protected:
   void updateFromTopic();
 
+  void updateFromOptiTrack();
+
   void callback(const nav_msgs::Odometry::ConstPtr& msg);
+  void OptiTrack_callback(const geometry_msgs::PoseStamped::ConstPtr& msg); 
 
   nav_msgs::Odometry getOdomMsg();
 
@@ -61,12 +64,22 @@ class KalmanFilterEstimate : public StateEstimateBase {
 
   // Topic
   ros::Subscriber sub_;
+  ros::Subscriber OptiTrack_sub_; 
+
   realtime_tools::RealtimeBuffer<nav_msgs::Odometry> buffer_;
+  realtime_tools::RealtimeBuffer<geometry_msgs::PoseStamped> OptiTrack_buffer_;
+
   tf2_ros::Buffer tfBuffer_;
   tf2_ros::TransformListener tfListener_;
   tf2::Transform world2odom_;
   std::string frameOdom_, frameGuess_;
+
+  tf2::Transform OptiTrack_offset;
+  tf2::Transform OptiTrack_realtime;
+
   bool topicUpdated_;
+  bool optiTrackUpdated_;
+  bool optiTrack_firstreceived;
 };
 
 }  // namespace legged

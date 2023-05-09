@@ -147,7 +147,7 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
   //! TORSO Reference(z-axis)
   if(planarTerrainPtr_ != nullptr)
   {
-    if(targetTrajectories.stateTrajectory[1][0] < 1 && targetTrajectories.stateTrajectory[1][1] < 1 )
+    if(targetTrajectories.stateTrajectory[1][0] < 1 && targetTrajectories.stateTrajectory[1][1] < 1 ) //! target vel on x & y axis should be smaller than 1m/s
     {
       // std::cout << "target vel: " << targetTrajectories.stateTrajectory[1].head(3) << std::endl;  // 现在是robot frame了
       // std::cout << "vel_real: " << targetTrajectories.stateTrajectory[0].segment<3>(0) << std::endl;
@@ -225,7 +225,7 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
   // scalar_t delta_x = 1.05 * std::sqrt(0.45 / 9.8) * (vel_base_real_(0) - vel_base_cmd_(0)) + gait_cycle/2 * vel_base_cmd_(0);
   // scalar_t delta_y = 1.05 * std::sqrt(0.45 / 9.8) * (vel_base_real_(1) - vel_base_cmd_(1)) + gait_cycle/2 * vel_base_cmd_(1);
 
-  //! 就是下降的那一段很奇怪
+  //! 就是下降的那一段很奇怪，改小position_error_gain后貌似解决了
   if(planarTerrainPtr_ != nullptr) 
   // if(0) 
   {

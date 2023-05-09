@@ -136,8 +136,8 @@ void LeggedController::update(const ros::Time& time, const ros::Duration& period
   //! State Estimate
   updateStateEstimation(time, period);
 
-  scalar_t terrain_angle = stateEstimate_->get_terrain_angle();
-  // scalar_t terrain_angle = 0;
+  // scalar_t terrain_angle = stateEstimate_->get_terrain_angle();
+  scalar_t terrain_angle = 0;
   // std::cout << "terrain_angle: " << terrain_angle << std::endl;
 
   //! update state params for referencemanager

@@ -1,0 +1,53 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/icr/peterq/ros/controller_2_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/opt/openrobots/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/elevation_mapping_cupy/plane_segmentation/convex_plane_decomposition/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/elevation_mapping_cupy/plane_segmentation/convex_plane_decomposition_ros/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/elevation_mapping_cupy/elevation_mapping_cupy/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/elevation_mapping_cupy/plane_segmentation/grid_map_filters_rsl/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_sqp/hpipm_catkin/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/legged_control/legged_common/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/legged_control/legged_controllers/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/legged_control/legged_estimation/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/legged_control/legged_gazebo/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/legged_control/legged_hw/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/legged_control/legged_interface/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/legged_control/legged_examples/legged_unitree/legged_unitree_hw/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/legged_control/legged_wbc/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_pinocchio/ocs2_centroidal_model/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_core/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_ddp/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_ipm/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_robotic_examples/ocs2_legged_robot/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_robotic_examples/ocs2_legged_robot_ros/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_mpc/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_oc/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_pinocchio/ocs2_pinocchio_interface/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_test_tools/ocs2_qp_solver/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2_robotic_assets/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_robotic_tools/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_ros_interfaces/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_pinocchio/ocs2_self_collision/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_pinocchio/ocs2_self_collision_visualization/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_sqp/ocs2_sqp/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/ocs2/ocs2_thirdparty/include/**",
+        "/home/icr/peterq/ros/controller_2_ws/src/realsense_ros_gazebo/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

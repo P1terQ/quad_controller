@@ -18,6 +18,7 @@ LeggedHWLoop::LeggedHWLoop(ros::NodeHandle& nh, std::shared_ptr<LeggedHW> hardwa
   error += static_cast<int>(!nhP.getParam("loop_frequency", loopHz_));
   error += static_cast<int>(!nhP.getParam("cycle_time_error_threshold", cycleTimeErrorThreshold_));
   error += static_cast<int>(!nhP.getParam("thread_priority", threadPriority));
+
   if (error > 0) 
   {
     std::string error_message =
@@ -47,7 +48,8 @@ LeggedHWLoop::LeggedHWLoop(ros::NodeHandle& nh, std::shared_ptr<LeggedHW> hardwa
   }
 }
 
-void LeggedHWLoop::update() {
+void LeggedHWLoop::update() 
+{
   const auto currentTime = Clock::now();
   // Compute desired duration rounded to clock decimation
   const Duration desiredDuration(1.0 / loopHz_);

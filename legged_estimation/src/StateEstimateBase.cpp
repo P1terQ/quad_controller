@@ -39,6 +39,8 @@ void StateEstimateBase::updateImu(const Eigen::Quaternion<scalar_t>& quat, const
   angularVelCovariance_ = angularVelCovariance;
   linearAccelCovariance_ = linearAccelCovariance;
 
+  zyxOffset_ << 0.0, 0.05, -0.05;
+
   vector3_t zyx = quatToZyx(quat) - zyxOffset_;
   vector3_t angularVelGlobal = getGlobalAngularVelocityFromEulerAnglesZyxDerivatives<scalar_t>(
       zyx, getEulerAnglesZyxDerivativesFromLocalAngularVelocity<scalar_t>(quatToZyx(quat), angularVelLocal));

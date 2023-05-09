@@ -34,3 +34,6 @@ elevationmapping在跨沟的时候识别不到?
 
 # 5-7
 盲走版本能用，尝试解决elevation_mapping报错，尝试外置NUC
+
+# 5-9
+加入optiTrack辅助定位,not finished

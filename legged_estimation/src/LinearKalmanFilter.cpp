@@ -17,7 +17,8 @@ namespace legged {
 
 KalmanFilterEstimate::KalmanFilterEstimate(PinocchioInterface pinocchioInterface, CentroidalModelInfo info,
                                            const PinocchioEndEffectorKinematics& eeKinematics)
-    : StateEstimateBase(std::move(pinocchioInterface), std::move(info), eeKinematics), tfListener_(tfBuffer_), topicUpdated_(false) {
+    : StateEstimateBase(std::move(pinocchioInterface), std::move(info), eeKinematics), tfListener_(tfBuffer_), topicUpdated_(false) 
+{
   xHat_.setZero();
   ps_.setZero();
   vs_.setZero();
@@ -54,7 +55,13 @@ KalmanFilterEstimate::KalmanFilterEstimate(PinocchioInterface pinocchioInterface
   eeKinematics_->setPinocchioInterface(pinocchioInterface_);
 
   world2odom_.setRotation(tf2::Quaternion::getIdentity());
+  
   sub_ = ros::NodeHandle().subscribe<nav_msgs::Odometry>("/tracking_camera/odom/sample", 10, &KalmanFilterEstimate::callback, this);
+  
+  OptiTrack_sub_ = ros::NodeHandle().subscribe<geometry_msgs::PoseStamped>("/vrpn_client_node/dog/pose", 10, &KalmanFilterEstimate::OptiTrack_callback, this);
+  optiTrackUpdated_ = false;
+  optiTrack_firstreceived = true;
+
 }
 
 vector_t KalmanFilterEstimate::update(const ros::Time& time, const ros::Duration& period) 
@@ -166,6 +173,11 @@ vector_t KalmanFilterEstimate::update(const ros::Time& time, const ros::Duration
     topicUpdated_ = false;
   }
 
+  if(optiTrackUpdated_)
+  {
+    updateFromOptiTrack();
+    optiTrackUpdated_ = false;
+  }
   
   for (size_t i = 0; i < 4; ++i) 
   {
@@ -197,6 +209,7 @@ void KalmanFilterEstimate::updateFromTopic()
   auto* msg = buffer_.readFromRT();
 
   //! 每次更新 world2sensorTF
+  // 收到的是world2sensor
   tf2::Transform world2sensor;
   world2sensor.setOrigin(tf2::Vector3(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z));
   world2sensor.setRotation(tf2::Quaternion(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y, msg->pose.pose.orientation.z,
@@ -260,10 +273,42 @@ void KalmanFilterEstimate::updateFromTopic()
   publishMsgs(odom);
 }
 
-void KalmanFilterEstimate::callback(const nav_msgs::Odometry::ConstPtr& msg) {
+
+void KalmanFilterEstimate::updateFromOptiTrack()
+{
+  auto* msg = OptiTrack_buffer_.readFromRT();
+
+  //! 将第一次收到的TF作为offset
+  
+  if(optiTrack_firstreceived)
+  {
+    OptiTrack_offset.setOrigin(tf2::Vector3(msg->pose.position.x, msg->pose.position.y, msg->pose.position.z));
+    OptiTrack_offset.setRotation(tf2::Quaternion(msg->pose.orientation.x, msg->pose.orientation.y,
+      msg->pose.orientation.z, msg->pose.orientation.w));
+    optiTrack_firstreceived = false;
+  }
+
+  OptiTrack_realtime.setOrigin(tf2::Vector3(msg->pose.position.x, msg->pose.position.y, msg->pose.position.z));
+  OptiTrack_realtime.setRotation(tf2::Quaternion(msg->pose.orientation.x, msg->pose.orientation.y,
+    msg->pose.orientation.z, msg->pose.orientation.w));
+
+  tf2::Transform OptiTrack_odom = OptiTrack_offset.inverse() * OptiTrack_realtime;
+  vector3_t newPos(OptiTrack_odom.getOrigin().x(), OptiTrack_odom.getOrigin().y(), OptiTrack_odom.getOrigin().z());
+
+}
+
+void KalmanFilterEstimate::callback(const nav_msgs::Odometry::ConstPtr& msg) 
+{
   buffer_.writeFromNonRT(*msg);
   topicUpdated_ = true;
 }
+
+void KalmanFilterEstimate::OptiTrack_callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+{
+  OptiTrack_buffer_.writeFromNonRT(*msg);
+  optiTrackUpdated_ = true;
+}
+
 
 Eigen::Matrix<double, 4, 1> KalmanFilterEstimate::get_localfoot_H()
 {
