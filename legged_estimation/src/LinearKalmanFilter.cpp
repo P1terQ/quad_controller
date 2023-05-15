@@ -62,6 +62,7 @@ KalmanFilterEstimate::KalmanFilterEstimate(PinocchioInterface pinocchioInterface
   optiTrackUpdated_ = false;
   optiTrack_firstreceived = true;
 
+  OptiTrack_odom_pub_ = ros::NodeHandle().advertise<geometry_msgs::Vector3>("/test/OptiTrack_Odom", 1);
 }
 
 vector_t KalmanFilterEstimate::update(const ros::Time& time, const ros::Duration& period) 
@@ -175,17 +176,18 @@ vector_t KalmanFilterEstimate::update(const ros::Time& time, const ros::Duration
 
   if(optiTrackUpdated_)
   {
+    std::cout << "Update from OptiTrack" << std::endl;
     updateFromOptiTrack();
     optiTrackUpdated_ = false;
   }
   
-  for (size_t i = 0; i < 4; ++i) 
-  {
-    if (contactFlag_[i]) 
-    { //? 不知道这个高度到底是在那更新的。 
-      feetHeights_read[i] = xHat_(6 + i * 3 + 2);   // 更新feet_height
-    }
-  }
+  // for (size_t i = 0; i < 4; ++i) 
+  // {
+  //   if (contactFlag_[i]) 
+  //   { //? 不知道这个高度到底是在那更新的。 
+  //     feetHeights_read[i] = xHat_(6 + i * 3 + 2);   // 更新feet_height
+  //   }
+  // }
   
   updateLinear(xHat_.segment<3>(0), xHat_.segment<3>(3));
 
@@ -256,7 +258,8 @@ void KalmanFilterEstimate::updateFromTopic()
   pinocchio::forwardKinematics(model, data, qPino);
   pinocchio::updateFramePlacements(model, data);
 
-  xHat_.segment<3>(0) = newPos; //! 更新 xyz的位置
+  //! 主要是更新 xyz 和 feetHeights 的位置
+  xHat_.segment<3>(0) = newPos; 
   for (size_t i = 0; i < 4; ++i) 
   {
     xHat_.segment<3>(6 + i * 3) = eeKinematics_->getPosition(vector_t())[i];
@@ -282,7 +285,7 @@ void KalmanFilterEstimate::updateFromOptiTrack()
   
   if(optiTrack_firstreceived)
   {
-    OptiTrack_offset.setOrigin(tf2::Vector3(msg->pose.position.x, msg->pose.position.y, msg->pose.position.z));
+    OptiTrack_offset.setOrigin(tf2::Vector3(msg->pose.position.x, msg->pose.position.y, 0));
     OptiTrack_offset.setRotation(tf2::Quaternion(msg->pose.orientation.x, msg->pose.orientation.y,
       msg->pose.orientation.z, msg->pose.orientation.w));
     optiTrack_firstreceived = false;
@@ -294,6 +297,34 @@ void KalmanFilterEstimate::updateFromOptiTrack()
 
   tf2::Transform OptiTrack_odom = OptiTrack_offset.inverse() * OptiTrack_realtime;
   vector3_t newPos(OptiTrack_odom.getOrigin().x(), OptiTrack_odom.getOrigin().y(), OptiTrack_odom.getOrigin().z());
+
+  geometry_msgs::Vector3 msg1;
+  msg1.x = newPos[0];
+  msg1.y = newPos[1];
+  msg1.z = newPos[2];
+  OptiTrack_odom_pub_.publish(msg1);
+
+  const auto& model = pinocchioInterface_.getModel();
+  auto& data = pinocchioInterface_.getData();
+
+  vector_t qPino(info_.generalizedCoordinatesNum);
+  qPino.head<3>() = newPos;
+  qPino.segment<3>(3) = rbdState_.head<3>();
+  qPino.tail(info_.actuatedDofNum) = rbdState_.segment(6, info_.actuatedDofNum);
+  pinocchio::forwardKinematics(model, data, qPino);
+  pinocchio::updateFramePlacements(model, data);
+
+  xHat_.segment<3>(0) = newPos;
+
+  for(size_t i = 0; i < 4; ++i)
+  {
+    xHat_.segment<3>(6+i*3) = eeKinematics_->getPosition(vector_t())[i];
+    xHat_(6+i*3+2) -= footRadius_;
+    if(contactFlag_[i])
+    {
+      feetHeights_[i] = xHat_(6+i*3+2);
+    }
+  }
 
 }
 

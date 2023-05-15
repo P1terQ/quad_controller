@@ -85,13 +85,13 @@ SwitchedModelReferenceManager::SwitchedModelReferenceManager(std::shared_ptr<Gai
 
   //! A1
                     // LF     RF      LH     RH
-  default_foot_pos_ <<  0.24,   0.24, -0.16, -0.16,
-                       0.1,  -0.1,    0.08,   -0.08,
-                      -0.3,  -0.3,   -0.3,   -0.3;
+  // default_foot_pos_ <<  0.22,   0.22, -0.15, -0.15,
+  //                      0.1,  -0.1,    0.08,   -0.08,
+  //                     -0.3,  -0.3,   -0.3,   -0.3;
 
-  // default_foot_pos_ <<  0.28,   0.28, -0.22, -0.22,
-  //                      0.115,  -0.115,    0.115,   -0.115,
-  //                     -0.37,  -0.37,   -0.37,   -0.37;
+  default_foot_pos_ <<  0.28,   0.28, -0.22, -0.22,
+                       0.115,  -0.115,    0.115,   -0.115,
+                      -0.37,  -0.37,   -0.37,   -0.37;
 
   positionPublisher_LF = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("queryPosition_LF", 1);
   projectionPublisher_LF = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("projectedQueryPosition_LF", 1);
@@ -169,6 +169,7 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
       grid_map::Position hipRH_target_gm = base_pos_target_worldF.head(2) + default_foot_pos_.col(3).head(2);
       // std::cout << "hipLF_target_gm: " << hipLF_target_gm << std::endl;
 
+      //! 有时候会报错 "[Ocs2 MPC thread] Error : GridMap::at(...) : No map layer 'smooth_planar' available." 不知道为啥，偶然一次会出现
       scalar_t z_offset_hipLF = planarTerrainPtr_->gridMap.atPosition("smooth_planar",hipLF_target_gm);
       scalar_t z_offset_hipRF = planarTerrainPtr_->gridMap.atPosition("smooth_planar",hipRF_target_gm);
       scalar_t z_offset_hipLH = planarTerrainPtr_->gridMap.atPosition("smooth_planar",hipLH_target_gm);

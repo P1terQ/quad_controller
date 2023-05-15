@@ -39,7 +39,11 @@ void StateEstimateBase::updateImu(const Eigen::Quaternion<scalar_t>& quat, const
   angularVelCovariance_ = angularVelCovariance;
   linearAccelCovariance_ = linearAccelCovariance;
 
-  zyxOffset_ << 0.0, 0.05, -0.05;
+  //! 为啥现在走的时候一直往前？
+  //! 是这边的原因 还是 控制那边的原因， 等会把这边注释了跑一下simulation看看. simulation里边基本没有这种现象
+  //! 是不是因为elevation map的漂移导致的，因为落足的高度其实是根据elevation layer来的
+  //             前后（正前） 左右(负左)
+  // zyxOffset_ << 0.0, 0.0, -0.05;
 
   vector3_t zyx = quatToZyx(quat) - zyxOffset_;
   vector3_t angularVelGlobal = getGlobalAngularVelocityFromEulerAnglesZyxDerivatives<scalar_t>(

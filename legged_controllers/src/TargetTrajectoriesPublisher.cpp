@@ -109,8 +109,8 @@ TargetTrajectories cmdVelToTargetTrajectories(const vector_t& cmdVel, const Syst
 
     target(3) = currentPose(3) + cmdVel(3) * timeToTarget;  //! yaw_goal = yaw_now + v * delta_T
     //TODO: 加上yaw和pitch上的控制
-    target(4) = terrain_pitch;  
-    // target(4) = 0; 
+    // target(4) = terrain_pitch;  
+    target(4) = 0; 
     target(5) = 0;
 
     // std::cout << "target_pose: " << target << std::endl;

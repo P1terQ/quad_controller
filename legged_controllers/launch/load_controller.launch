@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 
 <launch>
-      <arg name="robot_type" default="a1" doc="Robot type: [a1, aliengo, go1, laikago]"/>
+      <arg name="robot_type" default="aliengo" doc="Robot type: [a1, aliengo, go1, laikago]"/>
 
       <arg name="cheater" default="true"/>
 
@@ -50,7 +50,4 @@
       <node pkg="joy_teleop" type="joy_teleop.py" name="joy_teleop">
       </node>
 
-      <!-- <include file="$(find elevation_mapping_cupy)/launch/a1_segmentation.launch">
-      </include> -->
-      
 </launch>
