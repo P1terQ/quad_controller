@@ -25,6 +25,4 @@ User should modify IP address in udp.h
 To compensate for IMU drift or model error, modify zyxOffset_ in StateEstimateBase.cpp
 
 # Robot Walking Upstairs
-<video id="video" controls="" preload="none">
-    <source id="mp4" src="docs/robot_walking_stairs.mp4" type="video/mp4">
-</video>
+https://github.com/P1terQ/quad_controller/assets/90088571/af118b68-d190-4eb4-b7b5-ea6956f1431b
