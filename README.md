@@ -1,6 +1,6 @@
 # Dependency
 OCS2(Hpp-fcl,ocs2_robotic_assets): 
-Code: https://github.com/P1terQ/ocs2 -b labpeter
+Code: https://github.com/P1terQ/ocs2 -b master
 Original Repo: https://github.com/leggedrobotics/ocs2
 
 Quad_Controller
@@ -12,7 +12,7 @@ Code: https://github.com/P1terQ/elevation_mapping_cupy -b master
 Original Repo: https://github.com/leggedrobotics/elevation_mapping_cupy
 
 realsense_ros_gazebo:
-Code: https://github.com/P1terQ/realsense_ros_gazebo -b labpeter
+Code: https://github.com/P1terQ/realsense_ros_gazebo -b master
 Original Repo: https://github.com/nilseuropa/realsense_ros_gazebo
 
 
