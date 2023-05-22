@@ -23,7 +23,6 @@
 #include "legged_controllers/SafetyChecker.h"
 #include "legged_controllers/visualization/LeggedSelfCollisionVisualization.h"
 
-#include "elevation_map_msgs/ConvexAppro.h"
 #include "legged_msgs/lowstate.h"
 
 #include <convex_plane_decomposition/ConvexRegionGrowing.h>

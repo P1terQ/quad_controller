@@ -42,3 +42,6 @@ elevationmapping在跨沟的时候识别不到?
 optiTrack加上了后效果并没有取得改善，暂时先不在现实环境中调试了
 之前在现实中实验的时候改了一点代码，
 考虑将WBC tracker换成RL tracker
+
+# 5-12 
+找到了几篇参考的文章。具体的代码可以参照deep_mimic或者GenLoco的，这是开源代码里最接近我的想法的了。继续学习isaac_sim和orbit

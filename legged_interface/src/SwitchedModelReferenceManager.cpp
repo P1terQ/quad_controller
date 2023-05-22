@@ -147,6 +147,23 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
   //! TORSO Reference(z-axis)
   if(planarTerrainPtr_ != nullptr)
   {
+    auto layers = planarTerrainPtr_->gridMap.getLayers();
+    for(auto i : layers)
+    {
+      std::cout << i << std::endl;
+    }
+    // smooth
+    // normal_x
+    // normal_y
+    // normal_z
+    // plane_classification
+    // smooth_before_postprocess
+    // elevationWithNaN
+    // elevationWithNaN_i
+    // elevationWithNaNClosed
+    // elevationWithNaNClosedDilated
+    // smooth_planar
+
     if(targetTrajectories.stateTrajectory[1][0] < 1 && targetTrajectories.stateTrajectory[1][1] < 1 ) //! target vel on x & y axis should be smaller than 1m/s
     {
       // std::cout << "target vel: " << targetTrajectories.stateTrajectory[1].head(3) << std::endl;  // 现在是robot frame了
@@ -185,24 +202,6 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
       // std::cout << "z_offset: " << reference_msg.z_offset << std::endl;
       reference_z_offset_publisher.publish(reference_msg); 
     }
-
-    // auto layers = planarTerrainPtr_->gridMap.getLayers();
-    // for(auto i : layers)
-    // {
-    //   std::cout << i << std::endl;
-    // }
-    // smooth
-    // normal_x
-    // normal_y
-    // normal_z
-    // plane_classification
-    // smooth_before_postprocess
-    // elevationWithNaN
-    // elevationWithNaN_i
-    // elevationWithNaNClosed
-    // elevationWithNaNClosedDilated
-    // smooth_planar
-
 
   }
 
