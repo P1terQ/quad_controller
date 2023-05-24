@@ -17,7 +17,8 @@
         <!-- <arg name="world_name" value="$(find legged_unitree_description)/launch/stair423.world"/> -->
         <!-- <arg name="world_name" value="$(find legged_unitree_description)/launch/challenge1.world"/> -->
         <!-- <arg name="world_name" value="$(find legged_unitree_description)/world/stair01.world"/> -->
-        <arg name="world_name" value="$(find legged_unitree_description)/world/stairs.world"/>
+        <!-- <arg name="world_name" value="$(find legged_unitree_description)/world/stairs.world"/> -->
+        <arg name="world_name" value="$(find legged_unitree_description)/world/stepping_stones.world"/>
     </include>
     <!-- push robot_description to factory and spawn robot in gazebo -->
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" clear_params="true"

@@ -7,6 +7,8 @@
 #include <ocs2_core/Types.h>
 #include <ocs2_core/misc/LoadData.h>
 #include <ocs2_robotic_tools/common/RotationTransforms.h>
+#include <ocs2_ros_interfaces/command/TargetTrajectoriesKeyboardPublisher.h>
+
 
 using namespace legged;
 
@@ -73,7 +75,7 @@ TargetTrajectories goalToTargetTrajectories(const vector_t& goal, const SystemOb
     vector_t target(6);
     target(0) = goal(0);
     target(1) = goal(1);
-    target(2) = COM_HEIGHT; //! this shouldn't be a const
+    target(2) = COM_HEIGHT + z_offset; //! this shouldn't be a const
     target(3) = goal(3);
     target(4) = 0;  
     target(5) = 0;
@@ -84,6 +86,42 @@ TargetTrajectories goalToTargetTrajectories(const vector_t& goal, const SystemOb
   const scalar_t targetReachingTime = observation.time + estimateTimeToTarget(targetPose - currentPose);
 
   return targetPoseToTargetTrajectories(targetPose, observation, targetReachingTime);
+}
+
+TargetTrajectories dummygoalToTargetTrajectories(const vector_t& goal, const SystemObservation& observation) 
+{
+  const vector_t currentPose = observation.state.segment<6>(6);
+
+  const vector_t targetPose = [&]()
+  {
+    vector_t target(6);
+    target(0) = currentPose(0) + goal(0);
+    target(1) = currentPose(1) + goal(1);
+    target(2) = COM_HEIGHT + z_offset; //! this shouldn't be a const
+    target(3) = currentPose(3) + goal(2);
+    target(4) = 0;  
+    target(5) = 0;
+    std::cout << "target_pose: " << target << std::endl;
+    return target;
+  }();
+
+  scalar_t delta_t = estimateTimeToTarget(targetPose - currentPose);
+  const scalar_t targetReachingTime = observation.time + delta_t;
+
+  auto trajectories =  targetPoseToTargetTrajectories(targetPose, observation, targetReachingTime);
+
+  trajectories.stateTrajectory[0].head(3) = observation.state.segment<3>(0); 
+  scalar_t V_x = goal(0) / delta_t;
+  scalar_t V_y = goal(1) / delta_t;
+  scalar_t V_w = goal(2) / delta_t;
+  Eigen::Matrix<scalar_t, 3, 1> cmd_vel;
+  cmd_vel << V_x, V_y, 0;
+  const Eigen::Matrix<scalar_t, 3, 1> zyx = currentPose.tail(3);
+  Eigen::Matrix<scalar_t, 3, 1> cmdVelRot = getRotationMatrixFromZyxEulerAngles(zyx) * cmd_vel;
+  std::cout << "cmdVelRot: " << cmdVelRot << std::endl;
+  trajectories.stateTrajectory[1].head(3) = cmdVelRot;  //! 给目标的方式没法计算vel_cmd阿
+
+  return trajectories;
 }
 
 TargetTrajectories cmdVelToTargetTrajectories(const vector_t& cmdVel, const SystemObservation& observation) 
@@ -128,14 +166,7 @@ TargetTrajectories cmdVelToTargetTrajectories(const vector_t& cmdVel, const Syst
   trajectories.stateTrajectory[0].head(3) = observation.state.segment<3>(0);    // state_now_vel
   trajectories.stateTrajectory[1].head(3) = cmdVelRot;   // state_target_vel
 
-  z_offset_last = z_offset;
-
-  // std::cout << "stateTrajectory.size()" << trajectories.stateTrajectory.size() << std::endl;
-
-  // std::cout << "currentVel: " << trajectories.stateTrajectory[0].segment<6>(0) << std::endl;
-  // std::cout << "targetVel: " << trajectories.stateTrajectory[1].segment<6>(0) << std::endl;
-  // std::cout << "currentPose: " << trajectories.stateTrajectory[0].segment<6>(6) << std::endl;
-  // std::cout << "targetPose: " << trajectories.stateTrajectory[1].segment<6>(6) << std::endl;
+  // z_offset_last = z_offset;
 
   return trajectories;
 }
@@ -159,10 +190,10 @@ int main(int argc, char** argv) {
   loadData::loadCppDataType(taskFile, "mpc.timeHorizon", TIME_TO_TARGET);
 
   z_offset = 0.0;
-  z_offset_last = 0.0;
+  // z_offset_last = 0.0;
   terrain_pitch = 0.0;
 
-  TargetTrajectoriesPublisher target_pose_command(nodeHandle, robotName, &goalToTargetTrajectories, &cmdVelToTargetTrajectories);
+  TargetTrajectoriesPublisher target_pose_command(nodeHandle, robotName, &goalToTargetTrajectories, &dummygoalToTargetTrajectories, &cmdVelToTargetTrajectories);
 
   ros::spin();  
 

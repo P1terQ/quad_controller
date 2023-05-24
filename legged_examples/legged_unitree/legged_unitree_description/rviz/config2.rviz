@@ -4,6 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /TF1/Frames1
         - //legged_robot/currentState1/Namespaces1
       Splitter Ratio: 0.5828054547309875
     Tree Height: 991
@@ -24,7 +25,7 @@ Panels:
   - Class: rviz/Time
     Name: Time
     SyncMode: 0
-    SyncSource: depth_pointcloud
+    SyncSource: ""
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -285,7 +286,7 @@ Visualization Manager:
       Marker Topic: /convex_plane_decomposition_ros/boundaries
       Name: PlaneBoundaries
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -446,6 +447,7 @@ Visualization Manager:
       Namespaces:
         CoM Trajectory: true
         EE Trajectories: true
+        Future footholds: true
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -477,12 +479,90 @@ Visualization Manager:
       Use rainbow: true
       Value: true
     - Class: rviz/TF
-      Enabled: false
+      Enabled: true
       Filter (blacklist): ""
       Filter (whitelist): ""
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        LF_FOOT:
+          Value: false
+        LF_calf:
+          Value: false
+        LF_hip:
+          Value: false
+        LF_thigh:
+          Value: false
+        LH_FOOT:
+          Value: false
+        LH_calf:
+          Value: false
+        LH_hip:
+          Value: false
+        LH_thigh:
+          Value: false
+        RF_FOOT:
+          Value: false
+        RF_calf:
+          Value: false
+        RF_hip:
+          Value: false
+        RF_thigh:
+          Value: false
+        RH_FOOT:
+          Value: false
+        RH_calf:
+          Value: false
+        RH_hip:
+          Value: false
+        RH_thigh:
+          Value: false
+        base:
+          Value: true
+        camera_bottom_screw_frame:
+          Value: false
+        camera_color_frame:
+          Value: false
+        camera_color_optical_frame:
+          Value: false
+        camera_depth_frame:
+          Value: false
+        camera_depth_optical_frame:
+          Value: false
+        camera_left_ir_frame:
+          Value: false
+        camera_left_ir_optical_frame:
+          Value: false
+        camera_link:
+          Value: false
+        camera_right_ir_frame:
+          Value: false
+        camera_right_ir_optical_frame:
+          Value: false
+        d435_Down_bottom_screw_frame:
+          Value: false
+        d435_Down_color_frame:
+          Value: false
+        d435_Down_color_optical_frame:
+          Value: false
+        d435_Down_depth_frame:
+          Value: false
+        d435_Down_depth_optical_frame:
+          Value: false
+        d435_Down_left_ir_frame:
+          Value: false
+        d435_Down_left_ir_optical_frame:
+          Value: false
+        d435_Down_link:
+          Value: false
+        d435_Down_right_ir_frame:
+          Value: false
+        d435_Down_right_ir_optical_frame:
+          Value: false
+        odom:
+          Value: true
+        unitree_imu:
+          Value: false
       Marker Alpha: 1
       Marker Scale: 1
       Name: TF
@@ -490,9 +570,60 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        {}
+        odom:
+          base:
+            LF_hip:
+              LF_thigh:
+                LF_calf:
+                  LF_FOOT:
+                    {}
+            LH_hip:
+              LH_thigh:
+                LH_calf:
+                  LH_FOOT:
+                    {}
+            RF_hip:
+              RF_thigh:
+                RF_calf:
+                  RF_FOOT:
+                    {}
+            RH_hip:
+              RH_thigh:
+                RH_calf:
+                  RH_FOOT:
+                    {}
+            camera_bottom_screw_frame:
+              camera_link:
+                camera_depth_frame:
+                  camera_color_frame:
+                    camera_color_optical_frame:
+                      {}
+                  camera_depth_optical_frame:
+                    {}
+                  camera_left_ir_frame:
+                    camera_left_ir_optical_frame:
+                      {}
+                  camera_right_ir_frame:
+                    camera_right_ir_optical_frame:
+                      {}
+            d435_Down_bottom_screw_frame:
+              d435_Down_link:
+                d435_Down_depth_frame:
+                  d435_Down_color_frame:
+                    d435_Down_color_optical_frame:
+                      {}
+                  d435_Down_depth_optical_frame:
+                    {}
+                  d435_Down_left_ir_frame:
+                    d435_Down_left_ir_optical_frame:
+                      {}
+                  d435_Down_right_ir_frame:
+                    d435_Down_right_ir_optical_frame:
+                      {}
+            unitree_imu:
+              {}
       Update Interval: 0
-      Value: false
+      Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Class: grid_map_rviz_plugin/GridMap
@@ -519,7 +650,7 @@ Visualization Manager:
       Marker Topic: /legged_reference_visualization
       Name: /legged_reference_visualization
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -535,7 +666,7 @@ Visualization Manager:
       Marker Topic: /convex_terrain_LF
       Name: /convex_terrain_LF
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -543,7 +674,7 @@ Visualization Manager:
       Marker Topic: /convex_terrain_LH
       Name: /convex_terrain_LH
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -551,7 +682,7 @@ Visualization Manager:
       Marker Topic: /convex_terrain_RF
       Name: /convex_terrain_RF
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -559,7 +690,7 @@ Visualization Manager:
       Marker Topic: /convex_terrain_RH
       Name: /convex_terrain_RH
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray

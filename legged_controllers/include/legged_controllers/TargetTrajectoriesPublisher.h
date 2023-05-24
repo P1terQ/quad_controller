@@ -5,6 +5,7 @@
 #pragma once
 
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/Twist.h>
 #include <ros/subscriber.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
@@ -20,7 +21,7 @@ namespace legged {
 using namespace ocs2;
 
 double z_offset;
-double z_offset_last;
+// double z_offset_last;
 
 double terrain_pitch;
 
@@ -30,8 +31,9 @@ class TargetTrajectoriesPublisher final {
   using CmdToTargetTrajectories = std::function<TargetTrajectories(const vector_t& cmd, const SystemObservation& observation)>;
 
   // constructor
-  TargetTrajectoriesPublisher(::ros::NodeHandle& nh, const std::string& topicPrefix, CmdToTargetTrajectories goalToTargetTrajectories, CmdToTargetTrajectories cmdVelToTargetTrajectories)
+  TargetTrajectoriesPublisher(::ros::NodeHandle& nh, const std::string& topicPrefix, CmdToTargetTrajectories goalToTargetTrajectories, CmdToTargetTrajectories dummygoalToTargetTrajectories,CmdToTargetTrajectories cmdVelToTargetTrajectories)
       : goalToTargetTrajectories_(std::move(goalToTargetTrajectories)),
+        dummygoalToTargetTrajectories_(std::move(dummygoalToTargetTrajectories)),
         cmdVelToTargetTrajectories_(std::move(cmdVelToTargetTrajectories)),
         tf2_(buffer_) 
   {
@@ -79,6 +81,22 @@ class TargetTrajectoriesPublisher final {
     };
     goalSub_ = nh.subscribe<geometry_msgs::PoseStamped>("/move_base_simple/goal", 1, goalCallback);
 
+    auto dummygoalCallback = [this](const geometry_msgs::Pose2D::ConstPtr& msg)
+    {
+      if (latestObservation_.time == 0.0)
+      {
+        return;
+      }
+
+      vector_t cmdGoal_x_y_theta = vector_t::Zero(3);
+      cmdGoal_x_y_theta[0] = msg->x;
+      cmdGoal_x_y_theta[1] = msg->y;
+      cmdGoal_x_y_theta[2] = msg->theta;
+
+      const auto trajectories = dummygoalToTargetTrajectories_(cmdGoal_x_y_theta, latestObservation_);
+      targetTrajectoriesPublisher_->publishTargetTrajectories(trajectories);
+    };
+    dummygoalSub_ = nh.subscribe<geometry_msgs::Pose2D>("/test/pose2D", 1, dummygoalCallback);
 
     //! robot_steering_tool cmd_vel subscriber
     auto cmdVelCallback = [this](const geometry_msgs::Twist::ConstPtr& msg) 
@@ -101,21 +119,22 @@ class TargetTrajectoriesPublisher final {
     };
     cmdVelSub_ = nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, cmdVelCallback);
 
+    //! use elevation_planner_terrain_layer to get the position in z-axis
     auto z_offset_Callback = [this](const legged_msgs::leggedreference::ConstPtr& msg)
     {
       z_offset = msg->z_offset;
-      terrain_pitch = msg->pitch_offset;
+      terrain_pitch = msg->pitch_offset;  //! now we don't use pitch.
     };
     z_offset_Sub_ = nh.subscribe<legged_msgs::leggedreference>("/legged_reference_Topic", 1, z_offset_Callback);
 
   }
 
  private:
-  CmdToTargetTrajectories goalToTargetTrajectories_, cmdVelToTargetTrajectories_;
+  CmdToTargetTrajectories goalToTargetTrajectories_, dummygoalToTargetTrajectories_, cmdVelToTargetTrajectories_;
 
   std::unique_ptr<TargetTrajectoriesRosPublisher> targetTrajectoriesPublisher_;
 
-  ::ros::Subscriber observationSub_, goalSub_, cmdVelSub_, z_offset_Sub_;
+  ::ros::Subscriber observationSub_, goalSub_, dummygoalSub_, cmdVelSub_, z_offset_Sub_;
   tf2_ros::Buffer buffer_;
   tf2_ros::TransformListener tf2_;
 

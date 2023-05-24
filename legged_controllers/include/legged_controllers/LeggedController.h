@@ -94,15 +94,13 @@ class LeggedController : public controller_interface::MultiInterfaceController<H
   ros::Subscriber terrainSubscriber;
   std::unique_ptr<convex_plane_decomposition::PlanarTerrain> planarTerrainPtr;
 
-  vector3_t user_vel_cmd;
-  ros::Subscriber User_CMDVEL_Subscriber;
-
  private:
   std::thread mpcThread_;
   std::atomic_bool controllerRunning_{}, mpcRunning_{};
   benchmark::RepeatedTimer mpcTimer_;
   benchmark::RepeatedTimer wbcTimer_;
 
+  bool if_perceptive_;
 };
 
 class LeggedCheaterController : public LeggedController {

@@ -33,6 +33,8 @@ using namespace convex_plane_decomposition;
 
 bool LeggedController::init(hardware_interface::RobotHW* robot_hw, ros::NodeHandle& controller_nh) {
 
+  controller_nh.getParam("/if_perceptive", if_perceptive_);
+
   //! load configuration
   std::string urdfFile;
   std::string taskFile;
@@ -74,22 +76,16 @@ bool LeggedController::init(hardware_interface::RobotHW* robot_hw, ros::NodeHand
   setupStateEstimate(taskFile, verbose);
 
   //! decomposed_elevationMap sub
-  auto terrain_callback = [this](const convex_plane_decomposition_msgs::PlanarTerrain::ConstPtr& msg)
+  if(if_perceptive_)
   {
-    std::unique_ptr<convex_plane_decomposition::PlanarTerrain> newTerrain(
-      new convex_plane_decomposition::PlanarTerrain(convex_plane_decomposition::fromMessage(*msg)) );
-    planarTerrainPtr.swap(newTerrain);
-  };
-  terrainSubscriber = controller_nh.subscribe<convex_plane_decomposition_msgs::PlanarTerrain>("/convex_plane_decomposition_ros/planar_terrain", 1, terrain_callback);
-
-  //! user_cmd sub
-  user_vel_cmd << 0.0, 0.0, 0.0;
-  auto user_cmdvel_callback = [this](const geometry_msgs::Twist::ConstPtr& msg)
-  {
-    user_vel_cmd << msg->linear.x, msg->linear.y, msg->angular.z;
-
-  };
-  User_CMDVEL_Subscriber = controller_nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, user_cmdvel_callback);
+    auto terrain_callback = [this](const convex_plane_decomposition_msgs::PlanarTerrain::ConstPtr& msg)
+    {
+      std::unique_ptr<convex_plane_decomposition::PlanarTerrain> newTerrain(
+        new convex_plane_decomposition::PlanarTerrain(convex_plane_decomposition::fromMessage(*msg)) );
+      planarTerrainPtr.swap(newTerrain);
+    };
+    terrainSubscriber = controller_nh.subscribe<convex_plane_decomposition_msgs::PlanarTerrain>("/convex_plane_decomposition_ros/planar_terrain", 1, terrain_callback);
+  }
 
   //! Whole body control
   wbc_ = std::make_shared<WeightedWbc>(leggedInterface_->getPinocchioInterface(), leggedInterface_->getCentroidalModelInfo(), *eeKinematicsPtr_);
@@ -136,13 +132,14 @@ void LeggedController::update(const ros::Time& time, const ros::Duration& period
   //! State Estimate
   updateStateEstimation(time, period);
 
-  // scalar_t terrain_angle = stateEstimate_->get_terrain_angle();
+  // scalar_t terrain_angle = stateEstimate_->get_terrain_angle();  //! 现在只有cheater_controller中实际用了adaptive_pitch
   scalar_t terrain_angle = 0;
   // std::cout << "terrain_angle: " << terrain_angle << std::endl;
 
-  //! update state params for referencemanager
-  // updateReferenceManager();
-  leggedInterface_->getSwitchedModelReferenceManagerPtr()->update(planarTerrainPtr, terrain_angle);
+  if(if_perceptive_)
+  {
+    leggedInterface_->getSwitchedModelReferenceManagerPtr()->update(planarTerrainPtr, terrain_angle); //! update state params for referencemanager
+  }
 
   // std::cout << "currentpose : " << currentObservation_.state.segment<6>(6) << std::endl;
 
