@@ -53,3 +53,7 @@ optiTrack加上了后效果并没有取得改善，暂时先不在现实环境�
 # 5-24
 已经加上perceptive_ptp模式了，通过发布‘/dummy_navigator_PTP/rel_goal’（这个有时候好像还有问题）和‘/dummy_navigator_PTP/abs_goal’（这个应该是稳定的）这两个话题控制，而且这里用的是欧拉角，比'/move_base_simple/goal'好用多了，并且这个是通过位置PID输出速度的，所以在perceptive模式下也兼容。
 设计了一个stepping_stones的场景，发现机器人非常不稳定，明明看上去蛮容易的，思考一下
+
+# 5-29
+感觉用smooth后的elevation_mapping作segmentation不太好，试了一下raw感觉也还可以
+实验了一下stepping_stones场景，感觉参数还是很重要，能不能有在线调参的办法

@@ -153,11 +153,11 @@ if(if_perceptive_)
   //! TORSO Reference(z-axis)
   if(planarTerrainPtr_ != nullptr)
   {
-    // auto layers = planarTerrainPtr_->gridMap.getLayers();
-    // for(auto i : layers)
-    // {
-    //   std::cout << i << std::endl;
-    // }
+    auto layers = planarTerrainPtr_->gridMap.getLayers();
+    for(auto i : layers)
+    {
+      std::cout << i << std::endl;
+    }
     // smooth
     // normal_x
     // normal_y
@@ -272,7 +272,10 @@ if(if_perceptive_)
                   foot_pos_baseF_next.col(j)[1] = foot_pos_baseF_now.col(j)[1] + vel_base_cmd_(1) * (currentMode_timeLeft+(next_swing_mode_duration));
 
                   grid_map::Position foot_pos_baseF_next_gm = foot_pos_baseF_next.col(j).head(2);
-                  foot_pos_baseF_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("smooth",foot_pos_baseF_next_gm);
+                  //! 到底那一层作为foot的高度最好
+                  // foot_pos_baseF_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("smooth",foot_pos_baseF_next_gm);
+                  // foot_pos_baseF_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("elevation",foot_pos_baseF_next_gm);
+                  foot_pos_baseF_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("smooth_planar",foot_pos_baseF_next_gm);
                   foot_pos_baseF_next_projected.col(j) = get_FootHold_Approximation(foot_pos_baseF_next.col(j), true, j);
                   FootH_next_WorldF[j] = foot_pos_baseF_next_projected.col(j)[2];
 
@@ -280,7 +283,9 @@ if(if_perceptive_)
                   foot_pos_baseF_next_next.col(j)[1] = foot_pos_baseF_next.col(j)[1] + vel_base_cmd_(1) * (currentMode_timeLeft+2*(next_swing_mode_duration));
 
                   grid_map::Position foot_pos_baseF_next_next_gm = foot_pos_baseF_next_next.col(j).head(2);
-                  foot_pos_baseF_next_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("smooth",foot_pos_baseF_next_next_gm);
+                  // foot_pos_baseF_next_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("smooth",foot_pos_baseF_next_next_gm);
+                  // foot_pos_baseF_next_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("elevation",foot_pos_baseF_next_next_gm);
+                  foot_pos_baseF_next_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("smooth_planar",foot_pos_baseF_next_next_gm);
                   foot_pos_baseF_next_next_projected.col(j) = get_FootHold_Approximation(foot_pos_baseF_next_next.col(j), false, j);
                   FootH_next_next_WorldF[j] = foot_pos_baseF_next_next_projected.col(j)[2];
 
