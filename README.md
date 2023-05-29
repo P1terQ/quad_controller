@@ -30,5 +30,6 @@ To compensate for IMU drift or model error, modify zyxOffset_ in StateEstimateBa
 
 # Robot Walking Stairs & Stepping Stones
 https://github.com/P1terQ/quad_controller/assets/90088571/92b1b6c0-7170-44cf-90bf-b88acee23147
+
 https://github.com/P1terQ/quad_controller/assets/90088571/d1e5f2ae-477b-4c1f-b3ba-d3a75e91ff31
 
