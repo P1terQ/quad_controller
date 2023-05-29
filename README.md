@@ -28,5 +28,7 @@ Now this repo support unitree A1 and unitree aliengo. To play with different rob
 User should modify IP address in udp.h
 To compensate for IMU drift or model error, modify zyxOffset_ in StateEstimateBase.cpp
 
-# Robot Walking Upstairs
+# Robot Walking Stairs & Stepping Stones
 https://github.com/P1terQ/quad_controller/assets/90088571/92b1b6c0-7170-44cf-90bf-b88acee23147
+https://github.com/P1terQ/quad_controller/assets/90088571/d1e5f2ae-477b-4c1f-b3ba-d3a75e91ff31
+
