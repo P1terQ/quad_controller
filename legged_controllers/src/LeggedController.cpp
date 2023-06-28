@@ -31,7 +31,38 @@ namespace legged {
 
 using namespace convex_plane_decomposition;
 
+// Eigen::MatrixXd traj_optimizedstate;
+// Eigen::MatrixXd traj_optimizedinput;
+// Eigen::MatrixXd traj_measuredstate;
+// Eigen::MatrixXd traj_wbctorque;
+Eigen::Vector4d traj_contact;
+// Eigen::MatrixXd traj_referencetime;
+// Eigen::Matrix<double, 1, 1> traj_referencetime;
+
+// std::string filename = "/home/ustc/robot/ros/ocs2_ws/src/quad_controller/legged_controllers/data/optimizedState.csv";
+std::string filename_optimizedstate = "/home/ustc/robot/ros/ocs2_ws/src/quad_controller/legged_controllers/data/optimizedState.csv";
+std::ofstream file_optimizedstate(filename_optimizedstate);
+
+std::string filename_optimizedinput = "/home/ustc/robot/ros/ocs2_ws/src/quad_controller/legged_controllers/data/optimizedinput.csv";
+std::ofstream file_optimizedinput(filename_optimizedinput);
+
+std::string filename_measuredstate = "/home/ustc/robot/ros/ocs2_ws/src/quad_controller/legged_controllers/data/measuredstate.csv";
+std::ofstream file_measuredstate(filename_measuredstate);
+
+std::string filename_wbctorque = "/home/ustc/robot/ros/ocs2_ws/src/quad_controller/legged_controllers/data/wbctorque.csv";
+std::ofstream file_wbctorque(filename_wbctorque);
+
+std::string filename_contactstate = "/home/ustc/robot/ros/ocs2_ws/src/quad_controller/legged_controllers/data/contactstate.csv";
+std::ofstream file_contactstate(filename_contactstate);
+
+std::string filename_referenceTime = "/home/ustc/robot/ros/ocs2_ws/src/quad_controller/legged_controllers/data/referenceTime.csv";
+std::ofstream file_referenceTime(filename_referenceTime);
+
+const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n", "","","\n");
+
 bool LeggedController::init(hardware_interface::RobotHW* robot_hw, ros::NodeHandle& controller_nh) {
+
+  controller_nh.getParam("/if_perceptive", if_perceptive_);
 
   //! load configuration
   std::string urdfFile;
@@ -74,22 +105,16 @@ bool LeggedController::init(hardware_interface::RobotHW* robot_hw, ros::NodeHand
   setupStateEstimate(taskFile, verbose);
 
   //! decomposed_elevationMap sub
-  auto terrain_callback = [this](const convex_plane_decomposition_msgs::PlanarTerrain::ConstPtr& msg)
+  if(if_perceptive_)
   {
-    std::unique_ptr<convex_plane_decomposition::PlanarTerrain> newTerrain(
-      new convex_plane_decomposition::PlanarTerrain(convex_plane_decomposition::fromMessage(*msg)) );
-    planarTerrainPtr.swap(newTerrain);
-  };
-  terrainSubscriber = controller_nh.subscribe<convex_plane_decomposition_msgs::PlanarTerrain>("/convex_plane_decomposition_ros/planar_terrain", 1, terrain_callback);
-
-  //! user_cmd sub
-  user_vel_cmd << 0.0, 0.0, 0.0;
-  auto user_cmdvel_callback = [this](const geometry_msgs::Twist::ConstPtr& msg)
-  {
-    user_vel_cmd << msg->linear.x, msg->linear.y, msg->angular.z;
-
-  };
-  User_CMDVEL_Subscriber = controller_nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, user_cmdvel_callback);
+    auto terrain_callback = [this](const convex_plane_decomposition_msgs::PlanarTerrain::ConstPtr& msg)
+    {
+      std::unique_ptr<convex_plane_decomposition::PlanarTerrain> newTerrain(
+        new convex_plane_decomposition::PlanarTerrain(convex_plane_decomposition::fromMessage(*msg)) );
+      planarTerrainPtr.swap(newTerrain);
+    };
+    terrainSubscriber = controller_nh.subscribe<convex_plane_decomposition_msgs::PlanarTerrain>("/convex_plane_decomposition_ros/planar_terrain", 1, terrain_callback);
+  }
 
   //! Whole body control
   wbc_ = std::make_shared<WeightedWbc>(leggedInterface_->getPinocchioInterface(), leggedInterface_->getCentroidalModelInfo(), *eeKinematicsPtr_);
@@ -136,13 +161,14 @@ void LeggedController::update(const ros::Time& time, const ros::Duration& period
   //! State Estimate
   updateStateEstimation(time, period);
 
-  // scalar_t terrain_angle = stateEstimate_->get_terrain_angle();
+  // scalar_t terrain_angle = stateEstimate_->get_terrain_angle();  //! 现在只有cheater_controller中实际用了adaptive_pitch
   scalar_t terrain_angle = 0;
   // std::cout << "terrain_angle: " << terrain_angle << std::endl;
 
-  //! update state params for referencemanager
-  // updateReferenceManager();
-  leggedInterface_->getSwitchedModelReferenceManagerPtr()->update(planarTerrainPtr, terrain_angle);
+  if(if_perceptive_)
+  {
+    leggedInterface_->getSwitchedModelReferenceManagerPtr()->update(planarTerrainPtr, terrain_angle); //! update state params for referencemanager
+  }
 
   // std::cout << "currentpose : " << currentObservation_.state.segment<6>(6) << std::endl;
 
@@ -162,18 +188,38 @@ void LeggedController::update(const ros::Time& time, const ros::Duration& period
 
   // std::cout << "optimizedpose: " << optimizedState.segment<6>(6) << std::endl;
   // std::cout << "delta_pose: " << optimizedState.segment<6>(6) - currentObservation_.state.segment<6>(6);
+  // std::cout << "centrodial_vel: " << optimizedState.segment<3>(0) << std::endl;
+  // std::cout << "centroidal angular velocity: " << optimizedState.segment<3>(3) << std::endl; 
+  // std::cout << "optimizedState: " << optimizedState << std::endl; //! STATE: angular velocity, linear velocity, x, y, z, yaw, pitch, roll, 12 joint angles
+  // std::cout << "optimizedInput: " << optimizedInput << std::endl; //! INPUT: LF_F, RF_F, LH_F, RH_F, 12 joint velocities
+  // std::cout << "measuredRbdState_: " << measuredRbdState_ << std::endl; //! measuredRbdState_:  yaw, pitch, roll, x, y, z, 12 joint angles, angular velocity, linear velocity, 12 joint velocities
 
   //! WBC接受的是高度是机器人自己的质心高度
 
   //! Whole body control
+  //! the optimized motion planned by the mpc layers consists of contact forces and desired joint velocities
   wbcTimer_.startTimer();
   vector_t x = wbc_->update(optimizedState, optimizedInput, measuredRbdState_, plannedMode, period.toSec());
   wbcTimer_.endTimer();
 
   vector_t torque = x.tail(12);
+  // std::cout << "wbc x:" << x << std::endl;  // 
 
-  vector_t posDes = centroidal_model::getJointAngles(optimizedState, leggedInterface_->getCentroidalModelInfo());
-  vector_t velDes = centroidal_model::getJointVelocities(optimizedInput, leggedInterface_->getCentroidalModelInfo());
+  vector_t posDes = centroidal_model::getJointAngles(optimizedState, leggedInterface_->getCentroidalModelInfo()); // optimized state
+  vector_t velDes = centroidal_model::getJointVelocities(optimizedInput, leggedInterface_->getCentroidalModelInfo()); // optimized velocity
+
+  // traj_referencetime << currentObservation_.time;
+  // std::cout << "here" << std::endl;
+
+  //!------------------------------------------------record here----------------------------------------------!//
+  file_optimizedstate << optimizedState.transpose().format(CSVFormat);
+  file_optimizedinput << optimizedInput.transpose().format(CSVFormat);
+  file_measuredstate << measuredRbdState_.transpose().format(CSVFormat);
+  file_wbctorque << torque.transpose().format(CSVFormat);
+  file_contactstate << traj_contact.transpose().format(CSVFormat);
+  file_referenceTime << currentObservation_.time << std::endl;
+
+  //!------------------------------------------------record here----------------------------------------------!//
 
   //! Safety check, if failed, stop the controller
   if (!safetyChecker_->check(currentObservation_, optimizedState, optimizedInput)) 
@@ -185,7 +231,7 @@ void LeggedController::update(const ros::Time& time, const ros::Duration& period
   //! set cmd
   for (size_t j = 0; j < leggedInterface_->getCentroidalModelInfo().actuatedDofNum; ++j) 
   {
-    hybridJointHandles_[j].setCommand(posDes(j), velDes(j), 0, 3, torque(j));
+    hybridJointHandles_[j].setCommand(posDes(j), velDes(j), 5, 3, torque(j));   // default: kp=0 kd=3
   }
 
   //! Visualization
@@ -236,7 +282,10 @@ void LeggedController::updateStateEstimation(const ros::Time& time, const ros::D
   }
   for (size_t i = 0; i < contacts.size(); ++i) {
     contactFlag[i] = contactHandles_[i].isContact();
+    // std::cout << "contactFlag " << i << " : " << contactFlag[i] << std::endl;
+    traj_contact(i) = contactHandles_[i].isContact();
   }
+  // std::cout << "traj_contact: " << traj_contact << std::endl; 
   for (size_t i = 0; i < 4; ++i) {
     quat.coeffs()(i) = imuSensorHandle_.getOrientation()[i];
   }
@@ -251,7 +300,6 @@ void LeggedController::updateStateEstimation(const ros::Time& time, const ros::D
   // }
 
   //! Publish imu, jointState for Cerberus
-
 
   //! update rbdState_Joint
   stateEstimate_->updateJointStates(jointPos, jointVel);  // 更新关节位置速度
@@ -278,6 +326,14 @@ LeggedController::~LeggedController() {
   if (mpcThread_.joinable()) {
     mpcThread_.join();
   }
+
+  file_optimizedstate.close();
+  file_optimizedinput.close();
+  file_measuredstate.close();
+  file_wbctorque.close();
+  file_referenceTime.close();
+  std::cerr << "\n traj file closed" << std::endl;
+
   std::cerr << "########################################################################";
   std::cerr << "\n### MPC Benchmarking";
   std::cerr << "\n###   Maximum : " << mpcTimer_.getMaxIntervalInMilliseconds() << "[ms].";
@@ -286,6 +342,7 @@ LeggedController::~LeggedController() {
   std::cerr << "\n### WBC Benchmarking";
   std::cerr << "\n###   Maximum : " << wbcTimer_.getMaxIntervalInMilliseconds() << "[ms].";
   std::cerr << "\n###   Average : " << wbcTimer_.getAverageInMilliseconds() << "[ms].";
+
 }
 
 void LeggedController::setupLeggedInterface(const std::string& taskFile, const std::string& urdfFile, const std::string& referenceFile,

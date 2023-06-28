@@ -78,6 +78,7 @@ target_compile_options(${PROJECT_NAME} PUBLIC ${OCS2_CXX_FLAGS})
 add_executable(legged_target_trajectories_publisher
         src/TargetTrajectoriesPublisher.cpp
         )
+
 add_dependencies(legged_target_trajectories_publisher
         ${PROJECT_NAME}
         ${catkin_EXPORTED_TARGETS}
@@ -87,6 +88,21 @@ target_link_libraries(legged_target_trajectories_publisher
         ${catkin_LIBRARIES}
         )
 target_compile_options(legged_target_trajectories_publisher PRIVATE ${OCS2_CXX_FLAGS})
+
+add_executable(legged_dummy_navigator
+        src/DummyNavigator.cpp
+        )
+
+add_dependencies(legged_dummy_navigator
+        ${PROJECT_NAME}
+        ${catkin_EXPORTED_TARGETS}
+        )
+target_link_libraries(legged_dummy_navigator
+        ${PROJECT_NAME}
+        ${catkin_LIBRARIES}
+        )
+target_compile_options(legged_dummy_navigator PRIVATE ${OCS2_CXX_FLAGS})
+
 
 #########################
 ###   CLANG TOOLING   ###

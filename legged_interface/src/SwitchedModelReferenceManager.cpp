@@ -35,11 +35,12 @@ namespace legged_robot {
 
 using namespace convex_plane_decomposition;
 
-scalar_t gait_cycle = 0.7;
+// scalar_t gait_cycle = 0.7;
 std::mutex Safety_Mutex;
 auto penaltyFunction = [](const Eigen::Vector3d& projectedPoint) { return 0.0; };
 scalar_t growthFactor = 1.05;
 bool visualize = true;
+bool if_perceptive_ = false;
 
 /******************************************************************************************************/
 
@@ -85,13 +86,13 @@ SwitchedModelReferenceManager::SwitchedModelReferenceManager(std::shared_ptr<Gai
 
   //! A1
                     // LF     RF      LH     RH
-  // default_foot_pos_ <<  0.22,   0.22, -0.15, -0.15,
-  //                      0.1,  -0.1,    0.08,   -0.08,
-  //                     -0.3,  -0.3,   -0.3,   -0.3;
+  default_foot_pos_ <<  0.22,   0.22, -0.15, -0.15,
+                       0.1,  -0.1,    0.08,   -0.08,
+                      -0.3,  -0.3,   -0.3,   -0.3;
 
-  default_foot_pos_ <<  0.28,   0.28, -0.22, -0.22,
-                       0.115,  -0.115,    0.115,   -0.115,
-                      -0.37,  -0.37,   -0.37,   -0.37;
+  // default_foot_pos_ <<  0.28,   0.28, -0.22, -0.22,
+  //                      0.115,  -0.115,    0.115,   -0.115,
+  //                     -0.37,  -0.37,   -0.37,   -0.37;
 
   positionPublisher_LF = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("queryPosition_LF", 1);
   projectionPublisher_LF = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("projectedQueryPosition_LF", 1);
@@ -116,6 +117,8 @@ SwitchedModelReferenceManager::SwitchedModelReferenceManager(std::shared_ptr<Gai
   reference_z_offset_publisher = ReferenceManagerNH.advertise<legged_msgs::leggedreference>("/legged_reference_Topic", 1);
 
   reference_visualization_publisher = ReferenceManagerNH.advertise<visualization_msgs::MarkerArray>("/legged_reference_visualization", 1);
+
+  ReferenceManagerNH.getParam("/if_perceptive", if_perceptive_);
 }
 
 
@@ -142,16 +145,19 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
   // std::cout << "initTime: " << initTime << std::endl;
   // std::cout << "finalTime: " << finalTime << std::endl;
 
-  set_currentTime_userdefined(initTime);
+  // std::cout << "if_perceptive_: " << if_perceptive_ << std::endl;
 
+if(if_perceptive_)
+{
+  set_currentTime_userdefined(initTime);
   //! TORSO Reference(z-axis)
   if(planarTerrainPtr_ != nullptr)
   {
-    auto layers = planarTerrainPtr_->gridMap.getLayers();
-    for(auto i : layers)
-    {
-      std::cout << i << std::endl;
-    }
+    // auto layers = planarTerrainPtr_->gridMap.getLayers();
+    // for(auto i : layers)
+    // {
+    //   std::cout << i << std::endl;
+    // }
     // smooth
     // normal_x
     // normal_y
@@ -172,6 +178,8 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
 
       vel_base_real_ = targetTrajectories.stateTrajectory[0].segment<3>(0); //! world_frame下的实际速度
       vel_base_cmd_ = targetTrajectories.stateTrajectory[1].segment<3>(0);  //! world_frame下的当前速度
+      // std::cout << "vel_base_real_: " << vel_base_real_ << std::endl;
+      // std::cout << "vel_base_cmd_: " << vel_base_cmd_ << std::endl;
 
       base2world_Trans_ = targetTrajectories.stateTrajectory[0].segment<3>(6);  //! 当前状态base->world的translation
 
@@ -204,12 +212,14 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
     }
 
   }
+}
 
   const auto timeHorizon = finalTime - initTime;  // MPC 1s
-
   //! Update Swing Trajectory Reference
   modeSchedule = gaitSchedulePtr_->getModeSchedule(initTime - timeHorizon, finalTime + timeHorizon);  //! 0.6 only for 
 
+  if(if_perceptive_)
+  {
   scalar_array_t InitTerrainHeightSequence(modeSchedule.modeSequence.size(), 0.0);
   feet_array_t<scalar_array_t> feet_liftOffHeightSequence;  // std::array<T, 4>
   feet_liftOffHeightSequence.fill(InitTerrainHeightSequence);
@@ -262,7 +272,10 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
                   foot_pos_baseF_next.col(j)[1] = foot_pos_baseF_now.col(j)[1] + vel_base_cmd_(1) * (currentMode_timeLeft+(next_swing_mode_duration));
 
                   grid_map::Position foot_pos_baseF_next_gm = foot_pos_baseF_next.col(j).head(2);
-                  foot_pos_baseF_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("smooth",foot_pos_baseF_next_gm);
+                  //! 到底那一层作为foot的高度最好
+                  // foot_pos_baseF_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("smooth",foot_pos_baseF_next_gm);
+                  // foot_pos_baseF_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("elevation",foot_pos_baseF_next_gm);
+                  foot_pos_baseF_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("smooth_planar",foot_pos_baseF_next_gm);
                   foot_pos_baseF_next_projected.col(j) = get_FootHold_Approximation(foot_pos_baseF_next.col(j), true, j);
                   FootH_next_WorldF[j] = foot_pos_baseF_next_projected.col(j)[2];
 
@@ -270,7 +283,9 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
                   foot_pos_baseF_next_next.col(j)[1] = foot_pos_baseF_next.col(j)[1] + vel_base_cmd_(1) * (currentMode_timeLeft+2*(next_swing_mode_duration));
 
                   grid_map::Position foot_pos_baseF_next_next_gm = foot_pos_baseF_next_next.col(j).head(2);
-                  foot_pos_baseF_next_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("smooth",foot_pos_baseF_next_next_gm);
+                  // foot_pos_baseF_next_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("smooth",foot_pos_baseF_next_next_gm);
+                  // foot_pos_baseF_next_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("elevation",foot_pos_baseF_next_next_gm);
+                  foot_pos_baseF_next_next.col(j)[2] = planarTerrainPtr_->gridMap.atPosition("smooth_planar",foot_pos_baseF_next_next_gm);
                   foot_pos_baseF_next_next_projected.col(j) = get_FootHold_Approximation(foot_pos_baseF_next_next.col(j), false, j);
                   FootH_next_next_WorldF[j] = foot_pos_baseF_next_next_projected.col(j)[2];
 
@@ -296,9 +311,6 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
               }
 
               //! find next 2 swing mode for leg j
-              // feet_liftOffHeightSequence.at(j).at(i) = 0;
-              // feet_touchDownHeightSequence.at(j).at(i) = 100;
-
               for(size_t k = i+2; k<modeSchedule.eventTimes.size(); k++)
               {
                 if( !getContactFlags(modeSchedule.eventTimes.at(k))[j] ) // find swing mode for leg j
@@ -318,25 +330,10 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
                 }
               }
 
-              // feet_liftOffHeightSequence.at(j).at(i+1) = 0.1;
-              // feet_touchDownHeightSequence.at(j).at(i+1) = 0.1;
-
-              // feet_liftOffHeightSequence.at(j).at(i+2) = 0.1; //!
-              // feet_touchDownHeightSequence.at(j).at(i+2) = 0.1;
-
-              // feet_liftOffHeightSequence.at(j).at(i+3) = 0.1;
-              // feet_touchDownHeightSequence.at(j).at(i+3) = 0.1;
-
-              // feet_liftOffHeightSequence.at(j).at(i+4) = 0.1; //!
-              // feet_touchDownHeightSequence.at(j).at(i+4) = 0.1;
-
             }
             else  //! 当前Mode(i+1) 是 swing
             {
               //! find next 2 swing mode for leg j
-
-              // feet_liftOffHeightSequence.at(j).at(i) = 0;
-              // feet_touchDownHeightSequence.at(j).at(i) = 100;
 
               for(size_t k = i+1; k<modeSchedule.eventTimes.size(); k++)
               {
@@ -356,18 +353,6 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
                   break;
                 }
               }
-
-              // feet_liftOffHeightSequence.at(j).at(i+1) = 0.1; //!
-              // feet_touchDownHeightSequence.at(j).at(i+1) = 0.1;
-
-              // feet_liftOffHeightSequence.at(j).at(i+2) = 0.1;
-              // feet_touchDownHeightSequence.at(j).at(i+2) = 0.1;
-
-              // feet_liftOffHeightSequence.at(j).at(i+3) = 0.1; //!
-              // feet_touchDownHeightSequence.at(j).at(i+3) = 0.1;
-
-              // feet_liftOffHeightSequence.at(j).at(i+4) = 0.1; 
-              // feet_touchDownHeightSequence.at(j).at(i+4) = 0.1;
             }
 
           }
@@ -381,62 +366,13 @@ void SwitchedModelReferenceManager::modifyReferences(scalar_t initTime, scalar_t
 
   visualize_footholds();
 
-  // std::cout << "FootH_now_WorldF: " << FootH_now_WorldF << std::endl;
-  // std::cout << "FootH_next_WorldF: " << FootH_next_WorldF << std::endl;
-  // std::cout << "FootH_next_next_WorldF: " << FootH_next_next_WorldF << std::endl;
-
-
-  // std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
-  // for(int i=0; i<modeSchedule.modeSequence.size(); i++)
-  // {
-  //   if( i!= modeSchedule.eventTimes.size() && initTime>modeSchedule.eventTimes.at(i) && initTime<modeSchedule.eventTimes.at(i+1) )
-  //   {
-  //     std::cout << "get i: " << i << std::endl; // i = 3
-  //     size_t mode_ =  modeSchedule.modeAtTime(initTime);
-  //     std::cout << "mode now: " << mode_ << std::endl;  // mode now = 6
-  //     std::cout << "mode " << i << " : " << modeSchedule.modeSequence.at(i) << std::endl; // mode 3 = 9
-  //     std::cout << "mode " << i+1 << " : " << modeSchedule.modeSequence.at(i+1) << std::endl; // mode 4 = 6
-  //     break;
-  //   }
-  // }
-  // std::cout << "----------------------------------------------------" << std::endl;
-  // std::cout << "Time: " << initTime << std::endl; // initTime就是当前时间
-  // // std::cout << "finalTime: " << finalTime << std::endl; // finalTime是MPC的time horizon
-  // std::cout << "modeSchedule.modeSequence.size: " << modeSchedule.modeSequence.size() << std::endl;
-  // std::cout << "modeSchedule.eventTimes.size: " << modeSchedule.eventTimes.size() << std::endl;
-  // for(int i=0; i<modeSchedule.modeSequence.size(); i++)
-  // {
-  //   std::cout << i << "  " << modeSchedule.modeSequence.at(i) << "  ";
-  //   if( i == modeSchedule.eventTimes.size() )
-  //   {
-  //     std::cout << "NAN  ";
-  //   }
-  //   else
-  //   {
-  //     std::cout << modeSchedule.eventTimes.at(i)<<"  ";
-  //     if( initTime>modeSchedule.eventTimes.at(i) && initTime<modeSchedule.eventTimes.at(i+1))
-  //     {
-  //       std::cout << " now  ";     
-  //     }
-  //   }
-  //   std::cout << "liftOff: ";
-  //   for(int j=0; j<4; j++)
-  //   {
-  //     std::cout << feet_liftOffHeightSequence.at(j).at(i)<<","; // 第j条腿的第i个mode
-  //   }
-  //   std::cout << "  ";
-  //   std::cout << "touchDown: ";
-  //   for(int j=0; j<4; j++)
-  //   {
-  //     std::cout << feet_touchDownHeightSequence.at(j).at(i)<<",";
-  //   }
-  //   std::cout << std::endl;
-  // }
-
   //! 这个swingTraj 是local terrain frame吗？
   swingTrajectoryPtr_->update(modeSchedule, feet_liftOffHeightSequence, feet_touchDownHeightSequence);
-
-  // swingTrajectoryPtr_->update(modeSchedule, 0); //! 是liftoff永远为0，touchdown是相对于Liftoff吗？ 落足点高度
+  }
+  else
+  {
+    swingTrajectoryPtr_->update(modeSchedule, 0); //! 是liftoff永远为0，touchdown是相对于Liftoff吗？ 落足点高度
+  }
 
   Safety_Mutex.unlock();
 }

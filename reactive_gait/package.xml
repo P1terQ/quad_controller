@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+    <name>reactive_gait</name>
+    <version>0.0.0</version>
+    <description>The legged_stateserver packages.</description>
+    <maintainer email="111@gmail.com">Qiayuan Liao</maintainer>
+    <license>BSD</license>
+    <author email="111@gmail.com">Qiayuan Liao</author>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <build_depend>cmake_clang_tools</build_depend>
+    <depend>roscpp</depend>
+    <depend>darknet_ros_msgs</depend>
+    <depend>ocs2_msgs</depend>
+    
+
+</package>

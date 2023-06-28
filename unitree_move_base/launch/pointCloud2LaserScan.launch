@@ -1,0 +1,33 @@
+<launch>
+    <!-- transform pointCloud2 to laserScan -->
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="vlp_pointcloud_to_laserscan" 
+        respawn="false" output="screen">
+        <!-- PointCLoud2 Topic: /cam1/point_cloud_face -->
+        <remap from="cloud_in" to="/velodyne_points"/>
+        <!-- LaserScan Topic: /faceLaserScan -->
+        <remap from="/scan" to="/VLPLaserScan"/>
+        <rosparam>
+            target_frame: VLP-16
+            transform_tolerance: 0.01
+            min_height: -0.05
+            max_height: 0.1
+
+            angle_min: -0.087
+            angle_max: 0.087
+            angle_increment: 0.0175
+            scan_time: 0.3333
+            range_min: 0.1
+            range_max: 1.5
+            use_inf: true
+
+            # Concurrency level, affects number of pointclouds queued for processing and number of threads used
+            # 0 : Detect number of cores
+            # 1 : Single threaded
+            # 2->inf : Parallelism level
+            concurrency_level: 1
+        </rosparam>
+        <!-- <rosparam file="$(find unitree_move_base)/config/pointCloud_to_laserScan_params.yaml" command="load" /> -->
+    </node>
+
+
+</launch>

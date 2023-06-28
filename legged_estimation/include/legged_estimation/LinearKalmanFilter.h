@@ -66,6 +66,7 @@ class KalmanFilterEstimate : public StateEstimateBase {
   ros::Subscriber sub_;
   ros::Subscriber OptiTrack_sub_; 
   ros::Publisher OptiTrack_odom_pub_;
+  ros::Publisher odom_navi_pub;
 
   realtime_tools::RealtimeBuffer<nav_msgs::Odometry> buffer_;
   realtime_tools::RealtimeBuffer<geometry_msgs::PoseStamped> OptiTrack_buffer_;

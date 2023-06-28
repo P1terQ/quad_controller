@@ -1,5 +1,5 @@
 <launch>
-    <arg name="robot_type" default="aliengo" doc="Robot type: [a1, aliengo, go1, laikago]"/>
+    <arg name="robot_type" default="a1" doc="Robot type: [a1, aliengo, go1, laikago]"/>
 
     <param name="legged_robot_description" command="$(find xacro)/xacro $(find legged_unitree_description)/urdf/robot.xacro
        robot_type:=$(arg robot_type)
@@ -18,6 +18,11 @@
         <!-- <arg name="world_name" value="$(find legged_unitree_description)/launch/challenge1.world"/> -->
         <!-- <arg name="world_name" value="$(find legged_unitree_description)/world/stair01.world"/> -->
         <arg name="world_name" value="$(find legged_unitree_description)/world/stairs.world"/>
+        <!-- <arg name="world_name" value="$(find aws-robomaker-hospital-world)/worlds/hospital_stair_627.world"/> -->
+
+        <!-- <arg name="world_name" value="$(find legged_unitree_description)/world/stepping_stones.world"/> -->
+       
+        <!-- <arg name="world_name" value="$(find unitree_move_base)/worlds/smallRoom.world"/> -->
     </include>
     <!-- push robot_description to factory and spawn robot in gazebo -->
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" clear_params="true"

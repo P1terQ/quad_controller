@@ -13,6 +13,9 @@
 
 namespace legged {
 
+  double last_time_get_2;
+
+
 // https://gist.github.com/pshriwise/67c2ae78e5db3831da38390a8b2a209f
 Eigen::Matrix3d pseudo_inverse(const Eigen::Matrix3d &mat) {
     Eigen::JacobiSVD<Eigen::Matrix3d> svd(mat, Eigen::ComputeFullU | Eigen::ComputeFullV);
@@ -35,7 +38,8 @@ double cal_dihedral_angle(Eigen::Vector3d surf_coef_1, Eigen::Vector3d surf_coef
 
 FromTopicStateEstimate::FromTopicStateEstimate(PinocchioInterface pinocchioInterface, CentroidalModelInfo info,
                                                const PinocchioEndEffectorKinematics& eeKinematics)
-    : StateEstimateBase(std::move(pinocchioInterface), std::move(info), eeKinematics) {
+    : StateEstimateBase(std::move(pinocchioInterface), std::move(info), eeKinematics) 
+{
   ros::NodeHandle nh;
   sub_ = nh.subscribe<nav_msgs::Odometry>("/ground_truth/state", 10, &FromTopicStateEstimate::callback, this);  // cheatEstimator 订阅的是 gazebo发布的/ground_truth/state话题
 
@@ -52,13 +56,17 @@ FromTopicStateEstimate::FromTopicStateEstimate(PinocchioInterface pinocchioInter
     recent_contact_y_filter[i] = MovingWindowFilter(60);
     recent_contact_z_filter[i] = MovingWindowFilter(60);
   }
+
+  last_time_get_2 = ros::Time::now().toSec();
+
+  odom_navi_pub = nh.advertise<nav_msgs::Odometry>("/odom_navi", 1);
 }
 
 void FromTopicStateEstimate::callback(const nav_msgs::Odometry::ConstPtr& msg) {
   buffer_.writeFromNonRT(*msg);
 }
 
-vector_t FromTopicStateEstimate::update(const ros::Time& /*time*/, const ros::Duration& /*period*/) {
+vector_t FromTopicStateEstimate::update(const ros::Time& time, const ros::Duration& /*period*/) {
   nav_msgs::Odometry odom = *buffer_.readFromRT();
 
   if(first_received)
@@ -148,8 +156,33 @@ vector_t FromTopicStateEstimate::update(const ros::Time& /*time*/, const ros::Du
     }
   }
 
-
+  odom.header.stamp = time;
   publishMsgs(odom);
+
+  // last_time_get_2 = ros::Time::now().toSec();
+  // if(ros::Time::now().toSec() - last_time_get_2 > 0.5)
+  // {
+  //   last_time_get_2 = ros::Time::now().toSec();
+  //   // std::cout << "xHat_ = " << xHat_.transpose() << std::endl;
+  //   // auto odom_navi = getOdomMsg();
+  //   // odom_navi.header.stamp = time;
+  //   // odom_navi.header.frame_id = "odom";
+  //   // odom_navi.child_frame_id = "base";
+  //   // nav_msgs::Odometry odom_navi = odom.copy();
+  //   nav_msgs::Odometry odom_navi = *buffer_.readFromRT();
+  //   odom_navi.header.frame_id = "odom_navi";
+  //   // odom_navi.
+  //   std::cout << odom_navi.header.frame_id << std::endl;
+  //   std::cout << odom_navi.child_frame_id << std::endl;
+  //   std::cout << "publish odom_navi" << std::endl;
+  //   odom_navi_pub.publish(odom_navi);
+  // }
+  // else
+  // {
+  //   std::cout << "ros::Time::now().toSec(): " << ros::Time::now().toSec()  << std::endl;
+  //   std::cout << "last_time_get_2: " << last_time_get_2  << std::endl;
+  //   std::cout << "odom_navi not publish: " << ros::Time::now().toSec() - last_time_get_2  << std::endl;
+  // }
 
   return rbdState_;
 }

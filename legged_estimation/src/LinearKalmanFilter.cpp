@@ -15,6 +15,8 @@
 
 namespace legged {
 
+double last_time_get;
+
 KalmanFilterEstimate::KalmanFilterEstimate(PinocchioInterface pinocchioInterface, CentroidalModelInfo info,
                                            const PinocchioEndEffectorKinematics& eeKinematics)
     : StateEstimateBase(std::move(pinocchioInterface), std::move(info), eeKinematics), tfListener_(tfBuffer_), topicUpdated_(false) 
@@ -63,6 +65,9 @@ KalmanFilterEstimate::KalmanFilterEstimate(PinocchioInterface pinocchioInterface
   optiTrack_firstreceived = true;
 
   OptiTrack_odom_pub_ = ros::NodeHandle().advertise<geometry_msgs::Vector3>("/test/OptiTrack_Odom", 1);
+  // odom_navi_pub = ros::NodeHandle().advertise<geometry_msgs::Vector3>("/odom_navi", 1);
+
+  last_time_get = ros::Time::now().toSec();
 }
 
 vector_t KalmanFilterEstimate::update(const ros::Time& time, const ros::Duration& period) 
@@ -196,7 +201,21 @@ vector_t KalmanFilterEstimate::update(const ros::Time& time, const ros::Duration
   odom.header.stamp = time;
   odom.header.frame_id = "odom";
   odom.child_frame_id = "base";
+
+  //todo 
   publishMsgs(odom);
+
+  // last_time_get = ros::Time::now().toSec();
+  // if(ros::Time::now().toSec() - last_time_get > 0.1)
+  // {
+  //   last_time_get = ros::Time::now().toSec();
+  //   std::cout << "xHat_ = " << xHat_.transpose() << std::endl;
+  //   auto odom_navi = getOdomMsg();
+  //   odom_navi.header.stamp = time;
+  //   odom_navi.header.frame_id = "odom";
+  //   odom_navi.child_frame_id = "base";
+  //   odom_navi_pub.publish(odom_navi);
+  // }
 
   return rbdState_;
 }
