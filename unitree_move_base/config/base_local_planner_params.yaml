@@ -1,0 +1,50 @@
+# 根据代价地图生成机器人速度命令
+recovery_behavior_enabled: true  # 运行机器人使用脱困动作
+clearing_rotation_allowed: true  # 运行原地旋转脱困
+
+controller_frequency: 10.0 # 控制命令发布指令频率
+
+TrajectoryPlannerROS:
+   max_vel_x: 0.5 # 速度限制
+   min_vel_x: 0.3
+   max_vel_y: 0.5
+   min_vel_y: 0.3
+   max_vel_theta: 1.2
+   min_vel_theta: -1.2
+   min_in_place_vel_theta: 0.8   # 最小原地旋转速度
+   escape_vel: -0.3  # 从障碍物中脱离的速度
+   acc_lim_x: 0.5 # 加速度限制
+   acc_lim_y: 0.5
+   acc_lim_theta: 0.8
+   holonomic_robot: true   # 是否为完整约束。轮式小车为非完整，四足为完整
+   y_vels: [-0.2, -0.1, 0.1, 0.2]   # 侧向平移速度
+
+   yaw_goal_tolerance: 0.8 # about 45.8 degrees 允许的偏航角误差
+   xy_goal_tolerance: 0.4  # 40 cm
+   latch_xy_goal_tolerance: true    ## 允许机器人无法到达目标点时，原地旋转
+
+   meter_scoring: true
+
+   pdist_scale: 1.4
+   gdist_scale: 2.8
+
+   heading_scoring: true            ##
+   heading_lookahead: 0.8
+   heading_scoring_timestep: 2.8    ##
+   planner_patience: 5.0            
+   oscillation_reset_dist: 0.05      
+   publish_cost_grid_pc: false
+   prune_plan: true
+
+   controller_frequency: 10.0
+   sim_time: 3.0
+   sim_granularity: 0.025
+   angular_sim_granularity: 0.025
+   vx_samples: 12
+   vy_samples: 12
+   vtheta_samples: 100
+   dwa: true
+   path_distance_bias: 32
+   goal_distance_bias: 24
+   occdist_scale: 0.01
+   simple_attractor: false

@@ -247,8 +247,8 @@ R
 FootPlacementSoftConstraint
 {
   ; relaxed log barrier parameters 小了过沟的时候过不去，大了上楼梯不好上
-  mu                     1.0
-  delta                  0.001
+  mu                     1.2
+  delta                  0.0005
 }
 
 frictionConeSoftConstraint

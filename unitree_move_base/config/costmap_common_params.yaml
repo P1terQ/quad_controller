@@ -1,0 +1,12 @@
+obstacle_range: 4.0         ## 距离内有障碍物，会被标记为障碍物
+raytrace_range: 5.0         ## 距离内无障碍物，会被标记为自由空间
+footprint: [[0.3, 0.15], [0.3, -0.15], [-0.35, -0.15], [-0.35, 0.15]] # 碰撞空间，长方形
+# robot_radius: 0.3
+inflation_radius: 0.03  # 碰撞体积与障碍物间的安全距离
+max_obstacle_height: 1.0  # 障碍物最大高度
+min_obstacle_height: 0.0  # 障碍物最小高度
+# observation_sources: scan
+# scan: {data_type: LaserScan, topic: /merged_laserscan, marking: true, clearing: true, expected_update_rate: 3.3}
+observation_sources: VLPLaserScan 
+#                   数据类型                话题名               允许添加障碍    允许清除障碍           topic的更新频率
+VLPLaserScan: {data_type: LaserScan, topic: /VLPLaserScan, marking: true, clearing: true, expected_update_rate: 3.3}

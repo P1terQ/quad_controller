@@ -35,7 +35,7 @@ namespace legged_robot {
 
 using namespace convex_plane_decomposition;
 
-scalar_t gait_cycle = 0.7;
+// scalar_t gait_cycle = 0.7;
 std::mutex Safety_Mutex;
 auto penaltyFunction = [](const Eigen::Vector3d& projectedPoint) { return 0.0; };
 scalar_t growthFactor = 1.05;
@@ -86,13 +86,13 @@ SwitchedModelReferenceManager::SwitchedModelReferenceManager(std::shared_ptr<Gai
 
   //! A1
                     // LF     RF      LH     RH
-  // default_foot_pos_ <<  0.22,   0.22, -0.15, -0.15,
-  //                      0.1,  -0.1,    0.08,   -0.08,
-  //                     -0.3,  -0.3,   -0.3,   -0.3;
+  default_foot_pos_ <<  0.22,   0.22, -0.15, -0.15,
+                       0.1,  -0.1,    0.08,   -0.08,
+                      -0.3,  -0.3,   -0.3,   -0.3;
 
-  default_foot_pos_ <<  0.28,   0.28, -0.22, -0.22,
-                       0.115,  -0.115,    0.115,   -0.115,
-                      -0.37,  -0.37,   -0.37,   -0.37;
+  // default_foot_pos_ <<  0.28,   0.28, -0.22, -0.22,
+  //                      0.115,  -0.115,    0.115,   -0.115,
+  //                     -0.37,  -0.37,   -0.37,   -0.37;
 
   positionPublisher_LF = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("queryPosition_LF", 1);
   projectionPublisher_LF = ReferenceManagerNH.advertise<geometry_msgs::PointStamped>("projectedQueryPosition_LF", 1);
@@ -153,11 +153,11 @@ if(if_perceptive_)
   //! TORSO Reference(z-axis)
   if(planarTerrainPtr_ != nullptr)
   {
-    auto layers = planarTerrainPtr_->gridMap.getLayers();
-    for(auto i : layers)
-    {
-      std::cout << i << std::endl;
-    }
+    // auto layers = planarTerrainPtr_->gridMap.getLayers();
+    // for(auto i : layers)
+    // {
+    //   std::cout << i << std::endl;
+    // }
     // smooth
     // normal_x
     // normal_y
@@ -178,8 +178,8 @@ if(if_perceptive_)
 
       vel_base_real_ = targetTrajectories.stateTrajectory[0].segment<3>(0); //! world_frame下的实际速度
       vel_base_cmd_ = targetTrajectories.stateTrajectory[1].segment<3>(0);  //! world_frame下的当前速度
-      std::cout << "vel_base_real_: " << vel_base_real_ << std::endl;
-      std::cout << "vel_base_cmd_: " << vel_base_cmd_ << std::endl;
+      // std::cout << "vel_base_real_: " << vel_base_real_ << std::endl;
+      // std::cout << "vel_base_cmd_: " << vel_base_cmd_ << std::endl;
 
       base2world_Trans_ = targetTrajectories.stateTrajectory[0].segment<3>(6);  //! 当前状态base->world的translation
 

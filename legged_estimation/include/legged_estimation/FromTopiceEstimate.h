@@ -98,6 +98,7 @@ class FromTopicStateEstimate : public StateEstimateBase {
   MovingWindowFilter recent_contact_y_filter[4];
   MovingWindowFilter recent_contact_z_filter[4];
 
+  ros::Publisher odom_navi_pub;
 };
 
 

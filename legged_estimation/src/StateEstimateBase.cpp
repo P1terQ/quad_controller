@@ -63,8 +63,10 @@ void StateEstimateBase::updateLinear(const vector_t& pos, const vector_t& linear
 
 void StateEstimateBase::publishMsgs(const nav_msgs::Odometry& odom) {
   ros::Time time = odom.header.stamp;
-  scalar_t publishRate = 200;
-  if (lastPub_ + ros::Duration(1. / publishRate) < time) {
+  //! 不知道elevation_mapping建地图的时候这个会不会太低？
+  scalar_t publishRate = 5; // 200
+  if (lastPub_ + ros::Duration(1. / publishRate) < time) 
+  {
     lastPub_ = time;
     if (odomPub_->trylock()) {
       odomPub_->msg_ = odom;

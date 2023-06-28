@@ -1,11 +1,11 @@
 <?xml version="1.0" ?>
 
 <launch>
-      <arg name="robot_type" default="aliengo" doc="Robot type: [a1, aliengo, go1, laikago]"/>
+      <arg name="robot_type" default="a1" doc="Robot type: [a1, aliengo, go1, laikago]"/>
 
       <!-- make the files into global parameters -->
       <param name="if_perceptive" value="true"/>
-      <param name="if_dummyNavigator" value="true"/>
+      <param name="if_dummyNavigator" value="false"/>
             
       <param name="urdfFile" value="/tmp/legged_control/$(arg robot_type).urdf"/>
       <param name="taskFile" value="$(find legged_controllers)/config/$(arg robot_type)/task.info"/>

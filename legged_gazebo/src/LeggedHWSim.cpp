@@ -202,8 +202,9 @@ void LeggedHWSim::writeSim(ros::Time time, ros::Duration period)
         .stamp_ = time, .posDes_ = joint.posDes_, .velDes_ = joint.velDes_, .kp_ = joint.kp_, .kd_ = joint.kd_, .ff_ = joint.ff_});
 
     const auto& cmd = buffer.back();
-    joint.joint_.setCommand(cmd.kp_ * (cmd.posDes_ - joint.joint_.getPosition()) + cmd.kd_ * (cmd.velDes_ - joint.joint_.getVelocity()) +
-                            cmd.ff_);
+    joint.joint_.setCommand(cmd.kp_ * (cmd.posDes_ - joint.joint_.getPosition()) + cmd.kd_ * (cmd.velDes_ - joint.joint_.getVelocity()) + cmd.ff_);
+    // std::cout << "cmd.kp_: " << cmd.kp_ << std::endl;
+    // std::cout << "cmd.kd_: " << cmd.kd_ << std::endl;
   }
   DefaultRobotHWSim::writeSim(time, period);
 }

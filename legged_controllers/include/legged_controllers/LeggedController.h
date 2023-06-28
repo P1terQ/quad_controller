@@ -34,6 +34,7 @@
 
 #include <convex_plane_decomposition_ros/MessageConversion.h>
 #include <convex_plane_decomposition_ros/RosVisualizations.h>
+#include <Eigen/Dense>
 
 namespace legged {
 using namespace ocs2;
