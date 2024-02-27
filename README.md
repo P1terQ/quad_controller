@@ -45,4 +45,5 @@ To compensate for IMU drift or model error, modify the value`zyxOffset_` in `Sta
 # Robot Walking Stairs 
 https://github.com/P1terQ/quad_controller/assets/90088571/92b1b6c0-7170-44cf-90bf-b88acee23147
 
-``
+# Acknowledgement
+This work was supported in part by the National Natural Science Foundation of China under Grant U2013601, 62173314 and CAAI-Huawei MindSpore Open Fund.
